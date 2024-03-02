@@ -40,9 +40,9 @@ jobs:
       - name: Send Notification
         run: |
           if [ "${{ needs.build.result }}" == "success" ]; then
-            ./send.sh success $WEBHOOK_URL
+            ./.github/workflows/send.sh success $WEBHOOK_URL
           else
-            ./send.sh failure $WEBHOOK_URL
+            ./.github/workflows/send.sh failure $WEBHOOK_URL
           fi
         env:
           WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
