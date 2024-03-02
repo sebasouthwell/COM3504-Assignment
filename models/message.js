@@ -7,7 +7,7 @@ var MessageSchema = new Schema(
         sighting: {type: Schema.Types.ObjectId, ref: 'Sighting', required: true},
         message: {type: String, required: true, max: 100},
         userNickName: {type: String, required: true, max: 100},
-        dateTimestamp: {type: Date, required: true},
+        dateTimestamp   : {type: Date, required: true},
     });
 
 MessageSchema.set('toObject', {getters: true, virtuals: true});
