@@ -29,7 +29,7 @@ shift
 if [ $# -lt 1 ]; then
   echo -e "WARNING!!\nYou need to pass the WEBHOOK_URL environment variable as the second argument to this script.\nFor details & guide, visit: https://github.com/DiscordHooks/gitlab-ci-discord-webhook" && exit
 fi
-CI_PROJECT_URL="https://github.com/sebasouthwell/COM3504-Assignment/"
+CI_PROJECT_URL="https://github.com/sebasouthwell/COM3504-Assignment"
 AUTHOR_NAME="$(git log -1 --pretty="%aN")"
 COMMITTER_NAME="$(git log -1 --pretty="%cN")"
 COMMIT_SUBJECT="$(git log -1 --pretty="%s")"
