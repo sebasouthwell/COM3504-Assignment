@@ -2,11 +2,7 @@
 
 #Discord Send.sh script from https://github.com/DiscordHooks/gitlab-ci-discord-webhook/blob/master/send.sh for CI/CD Pipeline Messaging
 # Enter workflows directory
-cd ..
-# Enter .github directory
-cd ..
-# Enter main project directory
-cd ..
+cd /home/runner/work/COM3504-Assignment/COM3504-Assignment
 
 case $1 in
   "success" )
@@ -33,12 +29,14 @@ shift
 if [ $# -lt 1 ]; then
   echo -e "WARNING!!\nYou need to pass the WEBHOOK_URL environment variable as the second argument to this script.\nFor details & guide, visit: https://github.com/DiscordHooks/gitlab-ci-discord-webhook" && exit
 fi
-
-AUTHOR_NAME="$(git log -1 "$CI_COMMIT_SHA" --pretty="%aN")"
-COMMITTER_NAME="$(git log -1 "$CI_COMMIT_SHA" --pretty="%cN")"
-COMMIT_SUBJECT="$(git log -1 "$CI_COMMIT_SHA" --pretty="%s")"
-COMMIT_MESSAGE="$(git log -1 "$CI_COMMIT_SHA" --pretty="%b")" | sed -E ':a;N;$!ba;s/\r{0,1}\n/\\n/g'
-
+CI_PROJECT_URL="https://github.com/sebasouthwell/COM3504-Assignment/"
+AUTHOR_NAME="$(git log -1 --pretty="%aN")"
+COMMITTER_NAME="$(git log -1 --pretty="%cN")"
+COMMIT_SUBJECT="$(git log -1 --pretty="%s")"
+COMMIT_MESSAGE="$(git log -1 --pretty="%b")" | sed -E ':a;N;$!ba;s/\r{0,1}\n/\\n/g'
+CI_COMMIT_SHA="$(git log -1 --pretty="%H")"
+CI_COMMIT_SHORT_SHA="$(git log -1 --pretty="%h")"
+CI_COMMIT_REF_NAME="$(git symbolic-ref --short HEAD)"
 
 if [ "$AUTHOR_NAME" == "$COMMITTER_NAME" ]; then
   CREDITS="$AUTHOR_NAME authored & committed"
@@ -61,8 +59,7 @@ if [ -z $LINK_ARTIFACT ] || [ $LINK_ARTIFACT = false ] ; then
       "color": '$EMBED_COLOR',
       "author": {
         "name": "Pipeline #'"$CI_PIPELINE_IID"' '"$STATUS_MESSAGE"' - '"$CI_PROJECT_PATH_SLUG"'",
-        "url": "'"$CI_PIPELINE_URL"'",
-        "icon_url": "https://gitlab.com/favicon.png"
+        "url": "'"$CI_PIPELINE_URL"'"
       },
       "title": "'"$COMMIT_SUBJECT"'",
       "url": "'"$URL"'",
@@ -89,8 +86,7 @@ else
 			"color": '$EMBED_COLOR',
 			"author": {
 			"name": "Pipeline #'"$CI_PIPELINE_IID"' '"$STATUS_MESSAGE"' - '"$CI_PROJECT_PATH_SLUG"'",
-			"url": "'"$CI_PIPELINE_URL"'",
-			"icon_url": "https://gitlab.com/favicon.png"
+			"url": "'"$CI_PIPELINE_URL"'"
 			},
 			"title": "'"$COMMIT_SUBJECT"'",
 			"url": "'"$URL"'",
