@@ -2,11 +2,7 @@
 
 #Discord Send.sh script from https://github.com/DiscordHooks/gitlab-ci-discord-webhook/blob/master/send.sh for CI/CD Pipeline Messaging
 # Enter workflows directory
-cd ..
-# Enter .github directory
-cd ..
-# Enter main project directory
-cd ..
+cd /home/runner/work/COM3504-Assignment/COM3504-Assignment
 
 case $1 in
   "success" )
