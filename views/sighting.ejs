@@ -1,0 +1,67 @@
+<%- include('partials/header',{title: title}) %>
+<body class="bg-success-subtle">
+<h1></h1>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-3"></div>
+        <div class="pb-2 col-sm-6 bg-light">
+            <form action="savePlant" method="POST">
+                <div class="form-group pt-1">
+                    <label for="userNickName">Nickname: </label>
+                    <input class="form-control" type="text" id="userNickName" name="userNickName">
+                </div>
+                <div class="form-group pt-1">
+                    <label for="givenName">Plant name: </label>
+                    <input class="form-control" type="text" id="givenName" name="givenName">
+                </div>
+                <div class="form-group pt-1">
+                    <label for="lat">Plant sighting latitude: </label>
+                    <input class="form-control" type="number" id="lat" name="lat">
+                </div>
+                <div class="form-group pt-1">
+                    <label for="long">Plant sighting longitude: </label>
+                    <input class="form-control" type="number" id="long" name="long">
+                </div>
+                <div class="form-group pt-1">
+                    <label for="plantEstHeight">Plant height: </label>
+                    <input class="form-control" type="number" id="plantEstHeight" name="plantEstHeight">
+                </div>
+                <div class="form-group pt-1">
+                    <label for="plantEstSpread">Plant spread: </label>
+                    <input class="form-control" type="number" id="plantEstSpread" name="plantEstSpread">
+                </div>
+                <div class="form-group pt-1">
+                    <label for="hasFlowers">Does the plant have flowers: </label>
+                    <input class="form-check-input" type="checkbox" id="hasFlowers" name="hasFlowers">
+                </div>
+                <div class="form-group pt-1">
+                    <label for="hasFruit">Does the plant have fruit: </label>
+                    <input class="form-check-input" type="checkbox" id="hasFruit" name="hasFruit">
+                </div>
+                <div class="form-group pt-1">
+                    <label for="hasSeeds">Does the plant have seeds: </label>
+                    <input class="form-check-input" type="checkbox" id="hasSeeds" name="hasSeeds">
+                </div>
+                <div class="form-group pt-1">
+                    <label for="sunExposureLevel">Sun exposure level: </label>
+                    <input class="form-control" type="number" id="sunExposureLevel" name="sunExposureLevel">
+                </div>
+                <div class="form-group pt-1">
+                    <label for="photo">Photo: </label>
+                    <input class="form-control" type="file" id="photo" name="photo">
+                </div>
+                <div class="form-group pt-1">
+                    <label for="identificationStatus">Status: </label>
+                    <select class="form-control" id="identificationStatus" name="identificationStatus">
+                        <option value="Pending">Pending</option>
+                        <option value="Identified">Identified</option>
+                    </select>
+                </div>
+                <input class="btn btn-primary mt-2 w-100 p-" type="submit" value="Save">
+            </form>
+        </div>
+        <div class="col-sm-3"></div>
+    </div>
+</div>
+</body>
+<%- include('partials/footer') %>
