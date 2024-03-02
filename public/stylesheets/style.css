@@ -1,8 +1,22 @@
 body {
   padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  /*background-color: rgb(230,224,199);*/
 }
+div{
+  /*background-color: #45802E;*/
 
+}
 a {
   color: #00B7FF;
+}
+
+.space-around {
+  display: flex;
+  justify-content: space-around;
+}
+
+.logo{
+  width: 100px;
+  height: 100px;
 }
