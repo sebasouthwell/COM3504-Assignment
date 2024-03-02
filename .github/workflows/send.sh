@@ -1,6 +1,13 @@
 #!/bin/bash
 
 #Discord Send.sh script from https://github.com/DiscordHooks/gitlab-ci-discord-webhook/blob/master/send.sh for CI/CD Pipeline Messaging
+# Enter workflows directory
+cd ..
+# Enter .github directory
+cd ..
+# Enter main project directory
+cd ..
+
 case $1 in
   "success" )
     EMBED_COLOR=3066993
