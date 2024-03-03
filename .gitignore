@@ -132,3 +132,4 @@ dist
 
 # WebStorm project files
 .idea
+.DS_STORE
