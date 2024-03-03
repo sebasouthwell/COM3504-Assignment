@@ -1,5 +1,5 @@
-<%- include('partials/header',{title: title}) %>
-<body class="bg-success-subtle">
+<%- include('partials/header',{title: title,stylesheets: stylesheets, javascripts: javascripts}) %>
+<body class="bg-success-subtle w-100">
 <h1></h1>
 <div class="container">
     <div class="row">
@@ -8,7 +8,7 @@
             <div class="p-2 text-center">
                 <h1 class="text-success">Record plant sighting</h1>
             </div>
-            <form action="savePlant" method="POST">
+            <form action="/savePlant" method="POST">
                 <div class="form-group pt-1">
                     <label for="userNickName">Nickname: </label>
                     <input class="form-control" type="text" id="userNickName" name="userNickName">
@@ -17,13 +17,18 @@
                     <label for="givenName">Plant name: </label>
                     <input class="form-control" type="text" id="givenName" name="givenName">
                 </div>
-                <div class="form-group pt-1">
-                    <label for="lat">Plant sighting latitude: </label>
-                    <input class="form-control" type="number" id="lat" name="lat">
-                </div>
-                <div class="form-group pt-1">
-                    <label for="long">Plant sighting longitude: </label>
-                    <input class="form-control" type="number" id="long" name="long">
+                <div class="form-group p-1">
+                    <div class="d-flex form-group pt-1 justify-content-between">
+                        <div class="form-group w-50 pt-1">
+                            <label for="lat">Sighting Latitude: </label>
+                            <input class="form-control lat_nav" type="string" id="lat" name="lat">
+                        </div>
+                        <div class="form-group w-50 pt-1">
+                            <label for="long">Sighting Longitude: </label>
+                            <input class="form-control long_nav" type="string" id="long" name="long">
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary mt-2 w-100 hidden" type="button" id="get_location" onclick="getLocation('lat_nav','long_nav')">Get location</button>
                 </div>
                 <div class="form-group pt-1">
                     <label for="plantEstHeight">Plant height: </label>
@@ -60,7 +65,7 @@
                         <option value="Identified">Identified</option>
                     </select>
                 </div>
-                <input class="btn btn-primary mt-2 w-100 p-" type="submit" value="Save">
+                <input class="btn btn-success mt-2 w-100 p-" type="submit" value="Save">
             </form>
         </div>
         <div class="col-sm-3"></div>
