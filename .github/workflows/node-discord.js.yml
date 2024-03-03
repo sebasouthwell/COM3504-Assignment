@@ -2,13 +2,12 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ "main", "feature/*", "maintainence/*"]
+    branches: [ "main", "feature/*", "maintainence/*","fix/*"]
   pull_request:
-    branches: [ "main", "feature/*", "maintainence/*"]
+    branches: [ "main", "feature/*", "maintainence/*","fix/*"]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     strategy:
