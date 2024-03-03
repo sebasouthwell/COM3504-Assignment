@@ -22,8 +22,7 @@ app.use(
     express.static(path.join(__dirname, "node_modules/bootstrap/dist/"))
 );
 
-app.use('/', indexRouter);
-app.use('/sightings', sightingRouter);
+app.use('/', sightingRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

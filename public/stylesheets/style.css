@@ -4,7 +4,6 @@ body {
 }
 div{
   /*background-color: #45802E;*/
-
 }
 a {
   color: #00B7FF;
@@ -22,4 +21,42 @@ a {
 
 .hidden {
   display: none; !important;
+}
+
+footer{
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  border-top: 1px solid #000;
+  background-color: #f0f7f8;
+}
+
+header{
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  border-bottom: 1px solid #000;
+  background-color: #f0f7f8;
+}
+html body {
+  padding-top: 100px;
+}
+
+.text-primary {
+  color: #537f1b !important;
+}
+
+.mouseover-overlay{
+  display: none;
+  position: relative;
+}
+
+.mouseover-overlay:hover{
+  display: block;
+}
+
+.w-24{
+  width: 24% !important;
 }
