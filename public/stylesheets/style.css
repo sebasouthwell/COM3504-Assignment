@@ -60,6 +60,10 @@ html body {
   opacity: 100;
 }
 
+.template{
+  display: none !important;
+}
+
 .w-24{
   width: 24% !important;
 }
@@ -72,4 +76,8 @@ html body {
 @keyframes animateMouseLeave {
     from {opacity: 1;}
     to {opacity: 0;}
+}
+
+.star{
+  color: red;
 }
