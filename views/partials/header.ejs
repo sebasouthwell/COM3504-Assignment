@@ -2,7 +2,6 @@
 <html>
 <head>
     <title><%= title %></title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8">
     <meta name="description" content="Plant Sighting Reporter and Chat">
@@ -11,14 +10,17 @@
     <meta property='og:title' content='<%= title %>'/>
     <meta property='og:description' content='Plant Sighting Reporter and Chat'/>
     <link rel="icon" type="image/x-icon" href="/static/images/favicon.ico">
-    <% for (var i=0; i<stylesheets.length; i++) { %>
+    <% for (var i=0; i< stylesheets.length; i++) { %>
     <link rel="stylesheet" type="text/css" href="<%= stylesheets[i] %>" />
     <% } %>
     <% for (var i=0; i < javascripts.length; i++) { %>
     <script type="text/javascript" src="<%= javascripts[i] %>"></script>
     <% } %>
 </head>
-<header class="align-items-center rounded">
+<header class="align-items-center rounded mb-2">
+    <div class="bg-warning text-dark text-center p-2 hidden" id="client_warn">
+        Error: Could not connect to IndexedDB, Offline mode is not available.
+    </div>
     <div class="row">
         <div class="col">
             <a href="/view_all" class="link-success" data-toggle="tooltip" data-placement="bottom" title="View all sightings"><img class="logo" src="static/images/logo.png" alt=""></a>
@@ -27,7 +29,8 @@
             <h1 class="text-center text-primary">Planttrest</h1>
         </div>
         <div class="d-flex align-items-center col justify-content-end text-primary">
-            <a href="/sightings" class="link-success" data-toggle="tooltip" data-placement="bottom" title="Add sighting"><i class="bi bi-clipboard-data pe-2" href="/sightings" style="font-size: 60px;"></i></a>
+            <a href="/view_all" class="link-success" data-toggle="tooltip" data-placement="bottom" title="Add sighting"><i class="bi bi-search pe-2"  style="font-size: 60px;"></i></a>
+            <a href="/sightings" class="link-success" data-toggle="tooltip" data-placement="bottom" title="Add sighting"><i class="bi bi-clipboard-data pe-2" style="font-size: 60px;"></i></a>
         </div>
     </div>
 </header>
