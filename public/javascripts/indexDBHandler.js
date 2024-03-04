@@ -88,16 +88,3 @@ class indexDBHandler{
         });
     }
 }
-
-db.createObjectStore("tasks",{keyPath: "id", autoIncrement: true})
-
-let objStores = {
-    tasks: {keyPath: "id", autoIncrement: true},
-    messages: {keyPath: "id", autoIncrement: true},
-    users:
-        {
-            keyPath: "id",
-            autoIncrement: true,
-            unique: true
-        }
-}
