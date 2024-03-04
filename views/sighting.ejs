@@ -7,7 +7,7 @@
             </div>
             <form action="/savePlant" method="POST">
                 <div class="form-group pt-1">
-                    <label for="userNickName">Nickname: </label>
+                    <label for="userNickName">Nickname<sup class="star">*</sup>: </label>
                     <input class="form-control" type="text" id="userNickName" name="userNickName" required>
                 </div>
                 <div class="form-group pt-1">
@@ -17,38 +17,38 @@
                 <div class="form-group p-1">
                     <div class="d-flex form-group pt-1 justify-content-between">
                         <div class="form-group w-50 pt-1 pr-1">
-                            <label for="lat">Sighting Lat: </label>
+                            <label for="lat">Sighting Lat<sup class="star">*</sup>: </label>
                             <input class="form-control lat_nav" type="string" id="lat" name="lat" required>
                         </div>
                         <div class="form-group w-50 pt-1 pr-1">
-                            <label for="long">Sighting Long: </label>
+                            <label for="long">Sighting Long<sup class="star">*</sup>: </label>
                             <input class="form-control long_nav" type="string" id="long" name="long" required>
                         </div>
                     </div>
                     <button class="btn btn-secondary mt-2 w-100 hidden" type="button" id="get_location" onclick="getLocation('lat_nav','long_nav','get_location')">Get Current Location</button>
                 </div>
                 <div class="form-group pt-1">
-                    <label for="plantEstHeight">Plant height: </label>
+                    <label for="plantEstHeight">Plant height<sup class="star">*</sup>: </label>
                     <input class="form-control" type="number" id="plantEstHeight" name="plantEstHeight" required>
                 </div>
                 <div class="form-group pt-1">
-                    <label for="plantEstSpread">Plant spread: </label>
+                    <label for="plantEstSpread">Plant spread<sup class="star">*</sup>: </label>
                     <input class="form-control" type="number" id="plantEstSpread" name="plantEstSpread" required>
                 </div>
                 <div class="form-group pt-1">
-                    <label for="hasFlowers">Does the plant have flowers: </label>
+                    <label for="hasFlowers">Does the plant have flowers<sup class="star">*</sup>: </label>
                     <input class="form-check-input" type="checkbox" id="hasFlowers" name="hasFlowers" required>
                 </div>
                 <div class="form-group pt-1">
-                    <label for="hasFruit">Does the plant have fruit: </label>
+                    <label for="hasFruit">Does the plant have fruit<sup class="star">*</sup>: </label>
                     <input class="form-check-input" type="checkbox" id="hasFruit" name="hasFruit" required>
                 </div>
                 <div class="form-group pt-1">
-                    <label for="hasSeeds">Does the plant have seeds: </label>
+                    <label for="hasSeeds">Does the plant have seeds<sup class="star">*</sup>: </label>
                     <input class="form-check-input" type="checkbox" id="hasSeeds" name="hasSeeds" required>
                 </div>
                 <div class="form-group pt-1">
-                    <label for="sunExposureLevel">Sun exposure level (Percent of Sun Available): </label>
+                    <label for="sunExposureLevel">Sun exposure level (Percent of Sun Available)<sup class="star">*</sup>: </label>
                     <input class="form-range" type="range" id="sunExposureLevel" name="sunExposureLevel" min="0" max="100" step="0.5" list="sunsettings" required>
                     <div class="d-flex justify-content-between p-0">
                         <label for="sunExposureLevel">|</label>
