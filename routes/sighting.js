@@ -22,4 +22,10 @@ router.get('/view_all', function(req, res, next) {
     res.render('plantselect', { title: 'Planttrest: Plant Sighting Form',stylesheets: stylesheets, javascripts: js});
 });
 
+router.get('/login', function(req, res, next) {
+    js = javascript;
+    js.push("javascripts/indexDBHandler.js");
+    res.render('login', { title: 'Planttrest: Login',stylesheets: stylesheets, javascripts: js});
+});
+
 module.exports = router;

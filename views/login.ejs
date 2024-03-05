@@ -1,0 +1,61 @@
+<%- include('partials/header',{title: title,stylesheets: stylesheets, javascripts: javascripts}) %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Set Nickname</title>
+</head>
+<body>
+<div class="container">
+    <h1 class="mt-5">Welcome to Planttrest</h1>
+    <p>Please set your nickname:</p>
+    <form id="nicknameForm">
+        <div class="mb-3">
+            <input type="text" class="form-control" id="nicknameInput" placeholder="Enter nickname" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Set Nickname</button>
+    </form>
+    <a href="/login" class="link-success" data-toggle="tooltip" data-placement="bottom" title="Change nickname" id="logged_nickname">asfdaiofn</a>
+</div>
+
+<script>
+    let objStores = {
+        users: {
+            keyPath: "id",
+            autoIncrement: true,
+            unique: true
+        }
+    }
+
+    // let handler = new indexDBHandler('myDB', objStores, true);
+    // let data = {name: "Task 1", description: "This is the first task"};
+    // handler.create("tasks", data, function(result){
+    //     console.log('Nickname saved as: ' + result);
+    // });
+
+    document.getElementById('nicknameForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+        let handler = new indexDBHandler('nicknames', objStores);
+        let data = {name: document.getElementById('nicknameInput').toString(), description: "test"};
+
+        //save nickname to IndexDB
+        handler.create("users", data, function(result){
+            console.log('Nickname saved as: ' + result);
+        });
+
+        // redirect to home page but logged in
+        //window.location.href = "/";
+
+        handler.request('nicknames', 0, function(result) {
+            document.getElementById("logged_nickname").value = result
+            console.log('Displayed nickname in header');
+        });
+
+        const link = document.getElementById("logged_nickname");
+        const txt = document.createTextNode("From login");
+        link.append(txt);
+    });
+</script>
+</body>
+</html>
