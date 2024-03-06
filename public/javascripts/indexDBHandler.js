@@ -21,8 +21,11 @@ class indexDBHandler{
         this.currentDB.addEventListener("upgradeneeded", function(ev) {
             const db = ev.target.result;
             for (const [key, value] of Object.entries(objStores)){
-                 if (!db.objectStoreNames.contains(key) && typeof value === 'dict'){
+                // Had to change the check for dict as no type of that name in JS
+                 if (!db.objectStoreNames.contains(key) && value.constructor === Object){
                       db.createObjectStore(key,value);
+                 } else {
+                     console.log("ObjectStore format error");
                  }
             }
         });
