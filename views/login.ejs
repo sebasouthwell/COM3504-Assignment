@@ -1,0 +1,54 @@
+<%- include('partials/header',{title: title,stylesheets: stylesheets, javascripts: javascripts}) %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Set Nickname</title>
+</head>
+<body>
+<div class="container">
+    <h1 class="mt-5">Welcome to Planttrest</h1>
+    <p>Please set your nickname:</p>
+    <form id="nicknameForm">
+        <div class="mb-3">
+            <input type="text" class="form-control" id="nicknameInput" placeholder="Enter nickname" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Set Nickname</button>
+    </form>
+    <a href="/login" class="link-success" data-toggle="tooltip" data-placement="bottom" title="Change nickname" id="logged_nickname"></a>
+</div>
+
+<script>
+    let objStores = {
+        users: {
+            keyPath: "id",
+            autoIncrement: true,
+            unique: true
+        }
+    };
+
+    // Handler for DB
+    let handler = new indexDBHandler('nicknames', objStores);
+
+    document.getElementById('nicknameForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+        let data = {"name": document.getElementById('nicknameInput').value};
+
+        //save nickname to IndexDB
+        handler.create('users', data, function(result){
+            console.log('Nickname saved.');
+        });
+
+        // redirect to home page but logged in
+        //window.location.href = "/";
+
+        // Show current nickname
+        handler.request('users', 1, function(result) {
+            document.getElementById("logged_nickname").textContent = "Nickname: " + result['name'];
+        });
+
+    });
+</script>
+</body>
+</html>
