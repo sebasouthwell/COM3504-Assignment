@@ -17,8 +17,8 @@ var storage = multer.diskStorage({
 
 let upload = multer({storage});
 
-let stylesheets = ["bootstrap/dist/css/bootstrap.min.css","stylesheets/style.css","bootstrap-icons/font/bootstrap-icons.css"];
-let javascript = ["jquery/dist/jquery.js","bootstrap/dist/js/bootstrap.js","bootstrap/dist/js/bootstrap.bundle.js"];
+let stylesheets = ["/bootstrap/dist/css/bootstrap.min.css","/stylesheets/style.css","/bootstrap-icons/font/bootstrap-icons.css"];
+let javascript = ["/jquery/dist/jquery.js","/bootstrap/dist/js/bootstrap.js","/bootstrap/dist/js/bootstrap.bundle.js"];
 router.get('/', function(req, res, next) {
     js = javascript;
     js.push("javascripts/locationManager.js");
@@ -34,13 +34,9 @@ router.get('/sight', function(req, res, next) {
 
 router.post('/sight/add',upload.single('photoUpload'),  function (req,res) {
     let sightingData = req.body;
-    let filePath = req.file.filename;
-    let count = sighting.count();
-    console.log("Count" + count);
-    if (count === 0 || isNaN(count)){
-        sightingData.sightingID = 1;
-    } else {
-        sightingData.sightingID = count + 1;
+    let filePath = "";
+    if (req.file){
+       filePath = req.file.filename;
     }
     if (sightingData.hasFruit === undefined){
         sightingData.hasFruit = false;
@@ -53,9 +49,31 @@ router.post('/sight/add',upload.single('photoUpload'),  function (req,res) {
     }else{
         sightingData.hasSeeds = true;
     }
-    console.log(sightingData);
     let result = sighting.create(sightingData, filePath);
-    res.redirect('/');
+    result.then((sighting) => {
+        let s = JSON.parse(sighting);
+        let id = s['_id'].toString();
+        res.redirect('../sight_view/'+id)
+    }).catch((err) => {
+        console.log(err);
+        res.render('error',{message: "Error adding sighting", error: err})
+    })
+    ;
+});
+
+router.get('/sight_view/:id', function(req, res, next) {
+    let js = javascript;
+    let css = stylesheets;
+    let id = req.params['id'];
+    let result = sighting.getByID(id);
+    result.then((sighting) => {
+        if (sighting === null){
+            res.status(404).send("Sighting not found");
+        }
+        else{
+            res.render('viewPlant', { title: 'Planttrest: Plant Sighting Form',stylesheets: stylesheets, javascripts: javascript,sighting: JSON.parse(sighting)});
+        }
+    });
 });
 
 router.get('/login', function(req, res, next) {

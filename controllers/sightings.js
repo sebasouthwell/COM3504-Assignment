@@ -20,8 +20,6 @@ exports.create = function(sightingData, filePath){
     });
 
     return sighting.save().then(sighting => {
-        console.log(sighting);
-
         return JSON.stringify(sighting);
     }).catch(err => {
         console.log(err);
