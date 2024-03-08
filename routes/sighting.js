@@ -58,4 +58,10 @@ router.post('/sight/add',upload.single('photoUpload'),  function (req,res) {
     res.redirect('/');
 });
 
+router.get('/login', function(req, res, next) {
+    js = javascript;
+    js.push("javascripts/indexDBHandler.js");
+    res.render('login', { title: 'Planttrest: Login',stylesheets: stylesheets, javascripts: js});
+});
+
 module.exports = router;
