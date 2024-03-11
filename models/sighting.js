@@ -4,24 +4,35 @@ var Schema = mongoose.Schema;
 
 var SightingSchema = new Schema(
     {
-        lat: {type: Schema.Types.Decimal128, required: true},
-        long: {type: Schema.Types.Decimal128, required: true},
+        lat: {type: Schema.Types.Decimal128, required: true,
+                get: v => Types.Decimal128(+v.fromString()).toFixed(4),
+                set: v => Types.Decimal128.fromString(v.toFixed(4))},
+        long: {type: Schema.Types.Decimal128, required: true,
+                get: v => Types.Decimal128(+v.fromString()).toFixed(8),
+                set: v => Types.Decimal128.fromString(v.toFixed(8))},
         description: {type: String, required: true, max: 100},
         plantEstHeight: {type: Number, required: false},
         plantEstSpread: {type: Number, required: false},
         flowerColour: {type: String, required: false},
         hasSeeds: {type: Boolean, required: false},
+        hasFlowers: {type: Boolean, required: false},
         hasFruit: {type: Boolean, required: false},
         sunExposureLevel: {type: Number, required: true},
         photo: {type: String, required: false},
         userNickName: {type: String, required: true, max: 100},
         identificationStatus: {type: String, required: true, max: 100},
         givenName: {type: String, required: false, max: 100},
+        dateTime : {type: Date, required: true},
+        DBPediaURL: {type: String, required: false, max: 100}
     }
 );
 
 
-SightingSchema.set('toObject', {getters: true, virtuals: true});
+SightingSchema.set('toObject', {getters: true, virtuals: true,  transform: function (doc, ret) {
+                ret.lat = parseFloat(ret.lat);
+                ret.long = parseFloat(ret.long);
+                return ret;
+        }});
 
 //On some combionations of Node and Mongoose only the following command works - in theory they should be equivalent
 //CharacterSchema.set('toObject', {getters: true, virtuals: true});

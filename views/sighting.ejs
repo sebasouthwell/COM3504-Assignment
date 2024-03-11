@@ -40,15 +40,21 @@
                     <input class="form-control" type="number" id="plantEstSpread" name="plantEstSpread" required>
                 </div>
                 <div class="form-group pt-1">
-                    <label for="hasFlowers">Does the plant have flowers<sup class="star">*</sup>: </label>
-                    <input class="form-check-input" type="checkbox" id="hasFlowers" name="hasFlowers">
+                    <label for="hasFlowers">Does the plant have flowers<sup class="star"></sup>: </label>
+                    <input class="form-check-input" type="checkbox" id="hasFlowers" name="hasFlowers" onclick="showColour()">
                 </div>
+                <div class="color-picker hidden" id="colourShow">
+                    <label for="colorInput">Plant colour: </label>
+                    <input type="color" id="colorInput" value="#000000"  >
+                    <div class="color-preview" id="colorPreview"></div>
+                </div>
+
                 <div class="form-group pt-1">
-                    <label for="hasFruit">Does the plant have fruit<sup class="star">*</sup>: </label>
+                    <label for="hasFruit">Does the plant have fruit<sup class="star"></sup>: </label>
                     <input class="form-check-input" type="checkbox" id="hasFruit" name="hasFruit">
                 </div>
                 <div class="form-group pt-1">
-                    <label for="hasSeeds">Does the plant have seeds<sup class="star">*</sup>: </label>
+                    <label for="hasSeeds">Does the plant have seeds<sup class="star"></sup>: </label>
                     <input class="form-check-input" type="checkbox" id="hasSeeds" name="hasSeeds">
                 </div>
                 <div class="form-group pt-1">
@@ -73,6 +79,9 @@
                     <label for="photoUpload">Photo: </label>
                     <input class="form-control" accept="image/*" type="file" id="photoUpload" name="photoUpload">
                 </div>
+                <div class="hidden">
+                    <input class="form_control dateTime" type="string" id="dateTime" name="dateTime" value="">
+                </div>
                 <div class="form-group pt-1">
                     <label for="identificationStatus">Status: </label>
                     <select class="form-control" id="identificationStatus" name="identificationStatus">
@@ -80,9 +89,11 @@
                         <option value="Identified">Identified</option>
                     </select>
                 </div>
-                <input class="btn btn-success mt-2 w-100" type="submit" value="Save">
+                <input class="btn btn-success mt-2 w-100" type="submit" onclick="createSighting();" value="Save">
             </form>
         </div>
     </div>
 </div>
+
+
 <%- include('partials/footer') %>

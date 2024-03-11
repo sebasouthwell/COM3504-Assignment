@@ -29,6 +29,7 @@ router.get('/', function(req, res, next) {
 router.get('/sight', function(req, res, next) {
     js = javascript;
     js.push("javascripts/locationManager.js");
+    js.push("javascripts/createSighting.js");
     res.render('sighting', { title: 'Planttrest: Plant Sighting Form',stylesheets: stylesheets, javascripts: js});
 });
 
@@ -49,6 +50,12 @@ router.post('/sight/add',upload.single('photoUpload'),  function (req,res) {
     }else{
         sightingData.hasSeeds = true;
     }
+    if (sightingData.hasFlowers === undefined){
+        sightingData.hasFlowers = false;
+    }else{
+        sightingData.hasFlowers = true;
+    }
+    sightingData.dateTime = new Date(sightingData.dateTime);
     let result = sighting.create(sightingData, filePath);
     result.then((sighting) => {
         let s = JSON.parse(sighting);
@@ -76,10 +83,19 @@ router.get('/sight_view/:id', function(req, res, next) {
     });
 });
 
+router.get('/sun', function(req, res, next) {
+    js = javascript;
+    res.render('sun',{});
+});
+
 router.get('/login', function(req, res, next) {
     js = javascript;
     js.push("javascripts/indexDBHandler.js");
     res.render('login', { title: 'Planttrest: Login',stylesheets: stylesheets, javascripts: js});
+});
+
+router.get('/lions', function(req,res,next){
+    res.render('test', { title: 'Lions'});
 });
 
 module.exports = router;
