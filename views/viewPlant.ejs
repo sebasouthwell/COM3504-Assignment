@@ -3,7 +3,7 @@
     <div class="row">
         <div class="pb-2 bg-light rounded">
             <div class="p-2 text-center">
-                <h2 class="text-primary">Sighting on <%= new Date(sighting.dateTime).toString() %> </h2>
+                <h2 class="text-primary">Sighting on <%= new Date(sighting.dateTime).toString().substring(0,24) %> </h2>
             </div>
             <div>
                 <div class="row p-3">
@@ -14,7 +14,7 @@
                         <p class="text-success">Status: <%= sighting.identificationStatus %></p>
                         <p class="text-success">Description: <%= sighting.description %></p>
                         <br>
-                        <p class="text-success">Location: <%= sighting.lat %>, <%= sighting.long %></p>
+                        <p class="text-success">Location: <%= sighting.lat.valueOf().toString() %>, <%= sighting.long.valueOf().toString() %></p>
                         <p class="text-success">Sun exposure: <%= sighting.sunExposureLevel %>%</p>
                         <div class="d-flex row flex-row ">
                             <% if(sighting.hasSeeds){ %>

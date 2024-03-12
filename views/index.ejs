@@ -4,7 +4,7 @@
         <div class="pb-2 bg-light rounded">
             <nav class="navbar navbar-expand-lg bg-body-tertiary">
                 <div class="container-fluid">
-                    <div class="collapse navbar-collapse pt-2" id="navbarSupportedContent">
+                    <form class="collapse navbar-collapse pt-2" id="navbarSupportedContent">
                         <div class="dropdown ps-sm-2">
                             <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
                                 Features
@@ -59,42 +59,44 @@
                             <input class="form-control me-2" id="plantName"  placeholder="Name" >
                         </div>
                         <button class="btn btn-outline-success" onclick="redirectPage()">Search</button>
-                    </div>
+                    </form>
                 </div>
             </nav>
             <div class="pb-2 bg-light rounded mt-1">
                 <div class="d-flex justify-content-center  p-2 text-center">
-                    <h3 class="hidden" id="notFoundSightings"> No sightings found</h3>
-                    <div class="d-flex container row px-0" id="sightings">
-                        <div class="card text-white w-24 p-0 m-1 template">
-                            <a href="https://www.google.com"><img class="card-img w-100" src="https://hips.hearstapps.com/hmg-prod/images/high-angle-view-of-variety-of-succulent-plants-royalty-free-image-1584462052.jpg" alt="Card image">
-                                <div class="card-img-overlay mouseover-overlay">
-                                    <h5 class="card-title text-white">Card title</h5>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="card text-white w-24 p-0 m-1">
-                            <a href="https://www.google.com"><img class="card-img w-100" src="https://hips.hearstapps.com/hmg-prod/images/high-angle-view-of-variety-of-succulent-plants-royalty-free-image-1584462052.jpg" alt="Card image">
-                                <div class="card-img-overlay mouseover-overlay">
-                                    <h5 class="card-title text-white">Card title</h5>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="card text-white w-24 p-0 m-1">
-                            <a href="https://www.google.com"><img class="card-img w-100" src="https://hips.hearstapps.com/hmg-prod/images/high-angle-view-of-variety-of-succulent-plants-royalty-free-image-1584462052.jpg" alt="Card image">
-                                <div class="card-img-overlay mouseover-overlay">
-                                    <h5 class="card-title text-white">Card title</h5>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="card text-white w-24 p-0 m-1">
-                            <a href="https://www.google.com"><img class="card-img w-100" src="https://hips.hearstapps.com/hmg-prod/images/high-angle-view-of-variety-of-succulent-plants-royalty-free-image-1584462052.jpg" alt="Card image">
-                                <div class="card-img-overlay mouseover-overlay">
-                                    <h5 class="card-title text-white">Card title</h5>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
+                    <% if (sightings.length === 0) { %>
+                    <h3 id="notFoundSightings"> No sightings found</h3>
+                    <% } else { %>
+                    <div class="d-flex container row px-0 image-card " id="sightings">
+                        <% for(let i = 0; i < sightings.length; i++) { %>
+                            <div class="card text-white w-24 p-0 m-1">
+                                <a href="/sight_view/<%= sightings[i]._id %>"><img class="card-img w-100 h-100" src="<%= sightings[i].photo === "" ? 'https://hips.hearstapps.com/hmg-prod/images/high-angle-view-of-variety-of-succulent-plants-royalty-free-image-1584462052.jpg' :"/images/uploads/" + sightings[i].photo %>" alt="Card image">
+                                    <div class="d-flex card-img-overlay w-100 h-100 p-1 align-items-end">
+                                        <div class="w-100 d-flex">
+                                            <% if (sightings[i].hasSeeds) {%>
+                                                <div class="rounded thumbnail-sm me-2">
+                                                    <img src="/static/images/Seeds.png" alt="Has seeds" class="rounded thumbnail-sm border border-3 border-black" alt="Has Seeds">
+                                                </div>
+                                            <% } %>
+                                            <% if (sightings[i].hasFruit) {%>
+                                                <div class="rounded thumbnail-sm me-2">
+                                                    <img src="/static/images/Fruits.png" alt="Has fruits" class="rounded thumbnail-sm border border-3 border-black" alt="Has Fruits">
+                                                </div>
+                                            <% } %>
+                                            <% if (sightings[i].hasFlowers) {%>
+                                                <div class="rounded thumbnail-sm me-2">
+                                                    <img src="/static/images/Flower.png" alt="Has seeds" class="rounded thumbnail-sm border border-3 border-black" alt="Has Flowers">
+                                                </div>
+                                            <% } %>
+                                        </div>
+                                    </div>
+                                    <div class="card-img-overlay mouseover-overlay">
+                                        <h5 class="card-title text-white">Card title</h5>
+                                    </div>
+                                </a>
+                            </div>
+                        <% } %>
+                    <% } %>
                 </div>
             </div>
         </div>
