@@ -91,7 +91,9 @@
                                         </div>
                                     </div>
                                     <div class="card-img-overlay mouseover-overlay">
-                                        <h5 class="card-title text-white">Card title</h5>
+                                        <h5 class="card-title text-white">Plant Name: <%= sightings[i].plantName %></h5>
+                                        <p class="card-text text-white">Date: <%= new Date(sightings[i].dateTime).toString().substring(0,24) %></p>
+                                        <p class="card-text text-white">Reported by: <%= sightings[i].userNickName %></p>
                                     </div>
                                 </a>
                             </div>
