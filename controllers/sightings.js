@@ -6,6 +6,7 @@ exports.create = function(sightingData, filePath){
         plantName: sightingData.plantName,
         hasFruit: sightingData.hasFruit,
         hasSeeds: sightingData.hasSeeds,
+        hasFlowers: sightingData.hasFlowers,
         flowerColour: sightingData.flowerColour,
         plantEstHeight: sightingData.plantEstHeight,
         plantEstSpread: sightingData.plantEstSpread,
@@ -16,7 +17,9 @@ exports.create = function(sightingData, filePath){
         givenName: sightingData.givenName,
         lat: sightingData.lat,
         long: sightingData.long,
-        description: sightingData.description
+        description: sightingData.description,
+        dateTime: sightingData.dateTime,
+        DBPediaURL: sightingData.DBPediaURL
     });
 
     return sighting.save().then(sighting => {

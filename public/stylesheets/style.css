@@ -81,3 +81,9 @@ html body {
 .star{
   color: red;
 }
+
+.thumbnail{
+  width: 100px; !important;
+  height: 100px; !important;
+  bg-color: #f0f7f8;
+}
