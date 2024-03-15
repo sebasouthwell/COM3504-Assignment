@@ -4,12 +4,8 @@ var Schema = mongoose.Schema;
 
 var SightingSchema = new Schema(
     {
-        lat: {type: Schema.Types.Decimal128, required: true,
-                get: v => Types.Decimal128(+v.fromString()).toFixed(4),
-                set: v => Types.Decimal128.fromString(v.toFixed(4))},
-        long: {type: Schema.Types.Decimal128, required: true,
-                get: v => Types.Decimal128(+v.fromString()).toFixed(8),
-                set: v => Types.Decimal128.fromString(v.toFixed(8))},
+            lat: {type: Schema.Types.Decimal128, required: true},
+            long: {type: Schema.Types.Decimal128, required: true},
         description: {type: String, required: true, max: 100},
         plantEstHeight: {type: Number, required: false},
         plantEstSpread: {type: Number, required: false},
@@ -28,11 +24,7 @@ var SightingSchema = new Schema(
 );
 
 
-SightingSchema.set('toObject', {getters: true, virtuals: true,  transform: function (doc, ret) {
-                ret.lat = parseFloat(ret.lat);
-                ret.long = parseFloat(ret.long);
-                return ret;
-        }});
+SightingSchema.set('toObject', {getters: true, virtuals: true});
 
 //On some combionations of Node and Mongoose only the following command works - in theory they should be equivalent
 //CharacterSchema.set('toObject', {getters: true, virtuals: true});

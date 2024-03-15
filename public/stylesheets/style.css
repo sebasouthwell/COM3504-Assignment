@@ -39,6 +39,7 @@ header{
   top: 0;
   border-bottom: 1px solid #000;
   background-color: #f0f7f8;
+  z-index: 100;
 }
 html body {
   padding-top: 100px;
@@ -85,5 +86,17 @@ html body {
 .thumbnail{
   width: 100px; !important;
   height: 100px; !important;
-  bg-color: #f0f7f8;
+}
+
+.thumbnail-sm{
+  width: 4vw; !important;
+  height: 4vw; !important;
+  background-color: linen;
+}
+
+.image-card{
+  display: flex !important;
+  flex-wrap: wrap;
+  flex-direction: row;
+  align-items: center;
 }
