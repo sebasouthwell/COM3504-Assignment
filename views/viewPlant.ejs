@@ -21,19 +21,16 @@
                                 <div class="thumbnail me-2">
                                     <img src="/static/images/Seeds.png" alt="Has seeds" class="rounded thumbnail border border-3 border-black">
                                 </div>
-                            <% } else{ %>
                             <% } %>
                             <% if(sighting.hasFruit){ %>
                                 <div class="thumbnail mx-2">
                                     <img src="/static/images/Fruits.png" class="rounded thumbnail border border-3 border-black">
                                 </div>
-                            <% } else{ %>
                             <% } %>
                             <% if(sighting.hasFlowers){ %>
                                 <div class="thumbnail mx-2">
-                                    <img src="/static/images/Flower.png" class="rounded thumbnail border border-3 border-black">
+                                    <img src="/static/images/Flower.png" class="rounded thumbnail border border-3 border-black" style="<%= sighting.flowerColour ? "background-color: " + sighting.flowerColour + " !important;" : "" %>">
                                 </div>
-                            <% } else{ %>
                             <% } %>
 
                         </div>

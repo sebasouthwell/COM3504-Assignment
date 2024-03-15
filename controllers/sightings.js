@@ -19,7 +19,7 @@ exports.create = function(sightingData, filePath){
         long: sightingData.long,
         description: sightingData.description,
         dateTime: sightingData.dateTime,
-        DBPediaURL: sightingData.DBPediaURL
+        DBPediaURL: sightingData.DBPediaURL,
     });
 
     return sighting.save().then(sighting => {
@@ -32,7 +32,48 @@ exports.create = function(sightingData, filePath){
 
 exports.getAll = function(){
     return sightingModel.find({}).then(sightings => {
-        return JSON.stringify(sightings);
+        let newSightings = [];
+        for (let i = 0; i < sightings.length; i++){
+            newSightings.push(parseSighting(sightings[i]));
+        }
+        return JSON.stringify(newSightings);
+    }).catch(err => {
+        console.log(err);
+        return null;
+    });
+}
+
+const parseSighting = function(sighting){
+    let s = {
+        _id: sighting['_id'].toString(),
+        plantName: sighting['plantName'],
+        hasFruit: sighting['hasFruit'],
+        hasSeeds: sighting['hasSeeds'],
+        hasFlowers: sighting['hasFlowers'],
+        flowerColour: sighting['flowerColour'],
+        plantEstHeight: sighting['plantEstHeight'],
+        plantEstSpread: sighting['plantEstSpread'],
+        sunExposureLevel: sighting['sunExposureLevel'],
+        photo: sighting['photo'],
+        userNickName: sighting['userNickName'],
+        identificationStatus: sighting['identificationStatus'],
+        givenName: sighting['givenName'],
+        lat: sighting['lat'].toJSON()['$numberDecimal'],
+        long: sighting['long'].toJSON()['$numberDecimal'],
+        description: sighting['description'],
+        dateTime: sighting['dateTime'],
+        DBPediaURL: sighting['DBPediaURL']
+    }
+    return s;
+}
+
+exports.getAllFilter = function(query_map){
+    return sightingModel.find(query_map).then(sightings => {
+        let newSightings = [];
+        for (let i = 0; i < sightings.length; i++){
+            newSightings.push(parseSighting(sightings[i]));
+        }
+        return JSON.stringify(newSightings);
     }).catch(err => {
         console.log(err);
         return null;
@@ -41,7 +82,10 @@ exports.getAll = function(){
 
 exports.getByID = function(id){
     return sightingModel.findById(id).then(sighting => {
-        return JSON.stringify(sighting);
+        // Create a new object with the lat and long as numbers
+        let s = parseSighting(sighting);
+        console.log(s);
+        return JSON.stringify(s);
     }).catch(err => {
         console.log(err);
         return null;

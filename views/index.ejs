@@ -84,8 +84,8 @@
                                                 </div>
                                             <% } %>
                                             <% if (sightings[i].hasFlowers) {%>
-                                                <div class="rounded thumbnail-sm me-2">
-                                                    <img src="/static/images/Flower.png" alt="Has seeds" class="rounded thumbnail-sm border border-3 border-black" alt="Has Flowers">
+                                                <div class="rounded thumbnail-sm me-2" style="<%= sightings[i].flowerColour ? "background-color: " + sightings[i].flowerColour + " !important;" : "" %>">
+                                                    <img src="/static/images/Flower.png" alt="Has flowers" class="rounded thumbnail-sm border border-3 border-black" alt="Has Flowers" style="<%= sightings[i].flowerColour ? "background-color: " + sightings[i].flowerColour + " !important;" : "" %>">
                                                 </div>
                                             <% } %>
                                         </div>
