@@ -22,7 +22,6 @@
 <script>
     let objStores = {
         users: {
-            keyPath: "id",
             autoIncrement: true,
             unique: true
         }
@@ -33,11 +32,36 @@
 
     document.getElementById('nicknameForm').addEventListener('submit', function (event) {
         event.preventDefault();
-        let data = {"name": document.getElementById('nicknameInput').value};
-
-        //save nickname to IndexDB
-        handler.create('users', data, function(result){
-            console.log('Nickname saved.');
+        var nameinput = document.getElementById('nicknameInput').value;
+        // Whever to login or register
+        let register = true;
+        // Check all users to logout and login or register account
+        handler.getAll('users', function (result) {
+            for (var i = 0; i <= Object.keys(result).length - 1; i++) {
+                let user = result[i];
+                // Logout
+                if (user['active']) {
+                    user['active'] = false;
+                    handler.update('users', i+1, result[i], function (result) {
+                        console.log('Logged Out');
+                    });
+                }
+                let register = true;
+                if (user['name'] === nameinput) {
+                    register = false;
+                    user['active'] = true;
+                    handler.update('users', i+1, result[i], function (result) {
+                        console.log('Logged In');
+                    });
+                }
+            }
+            if (register) {
+                let data = {"name": nameinput, active: true};
+                //save nickname to IndexDB
+                handler.create('users', data, function(result){
+                    console.log('Nickname saved.');
+                });
+            }
         });
 
         // redirect to home page but logged in
