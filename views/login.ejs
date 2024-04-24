@@ -33,7 +33,7 @@
     document.getElementById('nicknameForm').addEventListener('submit', function (event) {
         event.preventDefault();
         var nameinput = document.getElementById('nicknameInput').value;
-        // Whever to login or register
+        // Whether to login or register
         let register = true;
         // Check all users to logout and login or register account
         handler.getAll('users', function (result) {
@@ -46,7 +46,6 @@
                         console.log('Logged Out');
                     });
                 }
-                let register = true;
                 if (user['name'] === nameinput) {
                     register = false;
                     user['active'] = true;
@@ -64,13 +63,13 @@
             }
         });
 
-        // redirect to home page but logged in
-        //window.location.href = "/";
+        // redirect to home page
+        window.location.href = "/";
 
         // Show current nickname
-        handler.request('users', 1, function(result) {
-            document.getElementById("logged_nickname").textContent = "Nickname: " + result['name'];
-        });
+        // handler.request('users', 1, function(result) {
+        //     document.getElementById("logged_nickname").textContent = "Nickname: " + result['name'];
+        // });
 
     });
 </script>
