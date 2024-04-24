@@ -133,3 +133,6 @@ dist
 # WebStorm project files
 .idea
 .DS_STORE
+
+# Session files
+public/images/uploads/*

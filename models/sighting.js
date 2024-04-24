@@ -4,20 +4,22 @@ var Schema = mongoose.Schema;
 
 var SightingSchema = new Schema(
     {
-        sightingID: {type: Schema.Types.UUID, required: true},
-        lat: {type: Schema.Types.Decimal128, required: true},
-        long: {type: Schema.Types.Decimal128, required: true},
+            lat: {type: Schema.Types.Decimal128, required: true},
+            long: {type: Schema.Types.Decimal128, required: true},
         description: {type: String, required: true, max: 100},
         plantEstHeight: {type: Number, required: false},
         plantEstSpread: {type: Number, required: false},
-        hasFlowers: {type: Boolean, required: false},
+        flowerColour: {type: String, required: false},
         hasSeeds: {type: Boolean, required: false},
+        hasFlowers: {type: Boolean, required: false},
         hasFruit: {type: Boolean, required: false},
         sunExposureLevel: {type: Number, required: true},
         photo: {type: String, required: false},
         userNickName: {type: String, required: true, max: 100},
         identificationStatus: {type: String, required: true, max: 100},
         givenName: {type: String, required: false, max: 100},
+        dateTime : {type: Date, required: true},
+        DBPediaURL: {type: String, required: false, max: 100}
     }
 );
 

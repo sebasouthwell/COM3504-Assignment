@@ -4,13 +4,11 @@
         <div class="pb-2 bg-light rounded">
             <nav class="navbar navbar-expand-lg bg-body-tertiary">
                 <div class="container-fluid">
-
-                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                        <div class="dropdown">
+                    <form class="collapse navbar-collapse pt-2" id="navbarSupportedContent">
+                        <div class="dropdown ps-sm-2">
                             <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
                                 Features
                             </a>
-
                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                                 <li><a class="dropdown-item" href="#">
                                         <input class="form-check-input" type="checkbox" value="fruit" id="fruit" />
@@ -18,19 +16,111 @@
                                     </a></li>
                                 <li><a class="dropdown-item" href="#">
                                         <input class="form-check-input" type="checkbox" value="seeds" id="seeds" />
-                                        <label class="form-check-label" for="fruit">Seeds</label>
+                                        <label class="form-check-label" for="seeds">Seeds</label>
+                                    </a></li>
+                                <li><a class="dropdown-item" href="#">
+                                        <input class="form-check-input" type="checkbox" value="flowers" id="flowers" />
+                                        <label class="form-check-label" for="flowers">Flowers</label>
                                     </a></li>
                             </ul>
                         </div>
-
-                        <form class="d-flex" role="search">
-                            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                            <button class="btn btn-outline-success" type="submit">Search</button>
-                        </form>
-                    </div>
+                        <div class="dropdown ps-sm-2">
+                            <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                                Status
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                <li><a class="dropdown-item" href="#">
+                                        <input class="form-check-input" type="checkbox" value="identified" id="identified" />
+                                        <label class="form-check-label" for="identified">Identified</label>
+                                    </a></li>
+                                <li><a class="dropdown-item" href="#">
+                                        <input class="form-check-input" type="checkbox" value="pending" id="pending" />
+                                        <label class="form-check-label" for="pending">Pending</label>
+                                    </a></li>
+                            </ul>
+                        </div>
+                        <div class="dropdown ps-sm-2">
+                            <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownSearch" data-bs-toggle="dropdown" aria-expanded="false">
+                                Sort by
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownSearch">
+                                <li><a class="dropdown-item" id="t-mr" onclick="setSort('t-mr')">Most recent</a></li>
+                                <li><a class="dropdown-item" id="t-lr" onclick="setSort('t-lr')">Least recent</a></li>
+                                <li><a class="dropdown-item" id="n-az" onclick="setSort('n-az')">Name (A-Z) [Unknown at End]</a></li>
+                                <li><a class="dropdown-item" id="n-za" onclick="setSort('n-za')">Name (Z-A)[Unknown at Top]</a></li>
+                                <li><a class="dropdown-item" id="l-cl" onclick="setSort('l-cl')">Closest Location</a></li>
+                                <li><a class="dropdown-item" id="l-fl" onclick="setSort('l-fl')">Furthest Location</a></li>
+                            </ul>
+                        </div>
+                        <div class=" ps-sm-2">
+                            <input type="number" class="form-control" id="radius" placeholder="Enter radius">
+                        </div>
+                        <div class="form-group hidden">
+                            <input class="form-control lat_nav" type="string" id="lat" name="lat" value="">
+                            <input class="form-control long_nav" type="string" id="long" name="long" value="">
+                        </div>
+                        <div class="d-flex ps-sm-2" >
+                            <input class="form-control me-2" id="plantName"  placeholder="Name" >
+                        </div>
+                        <button class="btn btn-outline-success" onclick="redirectPage()">Search</button>
+                    </form>
                 </div>
             </nav>
+            <div class="pb-2 bg-light rounded mt-1">
+                <div class="d-flex justify-content-center  p-2 text-center">
+                    <% if (sightings.length === 0) { %>
+                    <h3 id="notFoundSightings"> No sightings found</h3>
+                    <% } else { %>
+                    <div class="d-flex container row px-0 image-card " id="sightings">
+                        <% for(let i = 0; i < sightings.length; i++) { %>
+                            <div class="card text-white w-24 p-0 m-1">
+                                <a href="/sight_view/<%= sightings[i]._id %>"><img class="card-img w-100 h-100" src="<%= sightings[i].photo === "" ? 'https://hips.hearstapps.com/hmg-prod/images/high-angle-view-of-variety-of-succulent-plants-royalty-free-image-1584462052.jpg' :"/images/uploads/" + sightings[i].photo %>" alt="Card image">
+                                    <div class="d-flex card-img-overlay w-100 h-100 p-1 align-items-end">
+                                        <div class="w-100 d-flex">
+                                            <% if (sightings[i].hasSeeds) {%>
+                                                <div class="rounded thumbnail-sm me-2">
+                                                    <img src="/static/images/Seeds.png" alt="Has seeds" class="rounded thumbnail-sm border border-3 border-black" alt="Has Seeds">
+                                                </div>
+                                            <% } %>
+                                            <% if (sightings[i].hasFruit) {%>
+                                                <div class="rounded thumbnail-sm me-2">
+                                                    <img src="/static/images/Fruits.png" alt="Has fruits" class="rounded thumbnail-sm border border-3 border-black" alt="Has Fruits">
+                                                </div>
+                                            <% } %>
+                                            <% if (sightings[i].hasFlowers) {%>
+                                                <div class="rounded thumbnail-sm me-2" style="<%= sightings[i].flowerColour ? "background-color: " + sightings[i].flowerColour + " !important;" : "" %>">
+                                                    <img src="/static/images/Flower.png" alt="Has flowers" class="rounded thumbnail-sm border border-3 border-black" alt="Has Flowers" style="<%= sightings[i].flowerColour ? "background-color: " + sightings[i].flowerColour + " !important;" : "" %>">
+                                                </div>
+                                            <% } %>
+                                        </div>
+                                    </div>
+                                    <div class="card-img-overlay mouseover-overlay">
+                                        <h5 class="card-title text-white">Plant Name: <%= sightings[i].plantName %></h5>
+                                        <p class="card-text text-white">Date: <%= new Date(sightings[i].dateTime).toString().substring(0,24) %></p>
+                                        <p class="card-text text-white">Reported by: <%= sightings[i].userNickName %></p>
+                                    </div>
+                                </a>
+                            </div>
+                        <% } %>
+                    <% } %>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+<!-- Javascript to check all navigation values and redirect to a url with those values-->
+<!--<script>-->
+<!--    let sort = false-->
+<!--    function setSort(value){-->
+<!--       sort = value-->
+<!--    }-->
+<!--    function redirectPage() {-->
+<!--        let s =document.getElementById('seeds').checked-->
+<!--        let f = document.getElementById('fruit').checked-->
+<!--        let i = document.getElementById('identified').checked-->
+<!--        let p = document.getElementById('pending').checked-->
+<!--        let radius = document.getElementById('radius').value-->
+<!--        console.log(s,f,i,p, radius, sort)-->
+<!--    }-->
+<!--</script>-->
 <%- include('partials/footer') %>
