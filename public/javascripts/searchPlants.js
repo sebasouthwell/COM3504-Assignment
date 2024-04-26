@@ -6,6 +6,7 @@ function setSort(value){
 function redirectPage() {
     const queryString = new URLSearchParams(window.location.search);
     queryString.set('f', document.getElementById('fruit').checked);
+    queryString.set('fl', document.getElementById('flowers').checked);
     queryString.set('i', document.getElementById('identified').checked);
     queryString.set('p', document.getElementById('pending').checked);
     queryString.set('radius', document.getElementById('radius').value);
