@@ -9,13 +9,15 @@
     <meta name="author" content="Team BSc02">
     <meta property='og:title' content='<%= title %>'/>
     <meta property='og:description' content='Plant Sighting Reporter and Chat'/>
-    <link rel="icon" type="image/x-icon" href="/static/images/favicon.ico">
+    <link rel="icon" type="image/x-icon" href="/public/static/images/favicon.ico">
     <% for (var i=0; i< stylesheets.length; i++) { %>
     <link rel="stylesheet" type="text/css" href="<%= stylesheets[i] %>" />
     <% } %>
     <% for (var i=0; i < javascripts.length; i++) { %>
     <script type="text/javascript" src="<%= javascripts[i] %>"></script>
     <% } %>
+    <script type="module" src="/javascripts/mainModule.js"></script>
+    <link rel="manifest" href="/manifest.json">
 </head>
 <header class="align-items-center rounded mb-2">
     <div class="bg-warning text-dark text-center p-2 hidden" id="client_warn">

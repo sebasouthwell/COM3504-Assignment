@@ -104,19 +104,25 @@
         </div>
     </div>
 </div>
-<!-- Javascript to check all navigation values and redirect to a url with those values-->
-<!--<script>-->
-<!--    let sort = false-->
-<!--    function setSort(value){-->
-<!--       sort = value-->
-<!--    }-->
-<!--    function redirectPage() {-->
-<!--        let s =document.getElementById('seeds').checked-->
-<!--        let f = document.getElementById('fruit').checked-->
-<!--        let i = document.getElementById('identified').checked-->
-<!--        let p = document.getElementById('pending').checked-->
-<!--        let radius = document.getElementById('radius').value-->
-<!--        console.log(s,f,i,p, radius, sort)-->
-<!--    }-->
-<!--</script>-->
+</div>
+ Javascript to check all navigation values and redirect to a url with those values
+<script>
+    let sort = false
+    function setSort(value){
+       sort = value
+    }
+    function redirectPage() {
+        let s =document.getElementById('seeds').checked
+        let f = document.getElementById('fruit').checked
+        let i = document.getElementById('identified').checked
+        let p = document.getElementById('pending').checked
+        let radius = document.getElementById('radius').value
+        console.log(s,f,i,p, radius, sort)
+    }
+</script>
+<script>
+    if('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js', { scope: '/' });
+    }
+</script>
 <%- include('partials/footer') %>

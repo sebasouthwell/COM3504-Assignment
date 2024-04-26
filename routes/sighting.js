@@ -18,11 +18,11 @@ var storage = multer.diskStorage({
 let upload = multer({storage});
 
 let stylesheets = ["/bootstrap/dist/css/bootstrap.min.css","/stylesheets/style.css","/bootstrap-icons/font/bootstrap-icons.css"];
-let javascript = ["/jquery/dist/jquery.js","/bootstrap/dist/js/bootstrap.js","/bootstrap/dist/js/bootstrap.bundle.js"];
+let javascript = ["/jquery/dist/jquery.js","/bootstrap/dist/js/bootstrap.js","/bootstrap/dist/js/bootstrap.bundle.js","/javascripts/main.js"];
 router.get('/', function(req, res, next) {
     js = javascript;
-    js.push("javascripts/locationManager.js");
-    js.push( "javascripts/searchPlants.js")
+    js.push("/javascripts/locationManager.js");
+    js.push( "/javascripts/searchPlants.js")
     query_map = {};
     if (!(req.query['i'] && req.query['p'])){
         query_map['status'] = req.query['i'] ? "Identified" : "All";
@@ -63,7 +63,8 @@ router.get('/', function(req, res, next) {
             }
         }
         console.log(sightings_json.length);
-        res.render('index', { title: 'Planttrest: Plant Sighting Form',stylesheets: stylesheets, javascripts: js, sightings: sightings_json });
+        res.render('index', {
+            title: 'Planttrest: Plant Sighting Form',stylesheets: stylesheets, javascripts: js, sightings: sightings_json });
     });
 });
 
@@ -73,6 +74,7 @@ router.get('/sight', function(req, res, next) {
     js.push("javascripts/createSighting.js");
     res.render('sighting', { title: 'Planttrest: Plant Sighting Form',stylesheets: stylesheets, javascripts: js});
 });
+
 
 router.post('/sight/add',upload.single('photoUpload'),  function (req,res) {
     let sightingData = req.body;

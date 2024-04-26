@@ -69,6 +69,20 @@
                     <div class="col-1"></div>
                     <div class="col-10 bg-secondary-subtle">
                     <h2>Comments</h2>
+                        <div id="chat_interface" >
+                            <div>
+                                <div id="in_room" style="display: inline"></div>
+                            </div>
+                            <div id="history" class="boxed"></div>
+                            <div id="input" class="bottom boxed">
+                                <form onsubmit="return false;" style="width: 100%">
+                                    <p>
+                                        <input type="text" id="chat_input" name="chat_input" style="width: 80%">
+                                        <button id="chat_send" onclick="sendChatText()">Send</button>
+                                    </p>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
