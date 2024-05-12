@@ -69,6 +69,9 @@ const parseSighting = function(sighting){
 
 exports.getAllFilter = function(query_map){
     return sightingModel.find(query_map).then(sightings => {
+        if (sightings == null){
+            return null;
+        }
         let newSightings = [];
         for (let i = 0; i < sightings.length; i++){
             newSightings.push(parseSighting(sightings[i]));
@@ -79,6 +82,27 @@ exports.getAllFilter = function(query_map){
         return null;
     });
 }
+
+
+exports.getAllImagePaths = function(){
+    return sightingModel.find(null).then(
+        sightings => {
+            if (sightings == null){
+                return null;
+            }
+            let imagePaths = [];
+            for (let i = 0; i < sightings.length; i++){
+                console.log(sightings[i].photo);
+                imagePaths.push(sightings[i].photo);
+            }
+            return imagePaths.filter(str => /\w+/.test(str));
+        }).catch(err => {
+            console.log(err);
+            return null;
+        });
+};
+
+
 
 exports.getByID = function(id){
     return sightingModel.findById(id).then(sighting => {

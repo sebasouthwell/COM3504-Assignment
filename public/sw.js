@@ -9,21 +9,12 @@ self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME).then(function (cache_obj) {
             console.log('[ServiceWorker] Caching app shell');
-            return cache_obj.addAll([
-                '/bootstrap/dist/css/bootstrap.min.css',
-                '/stylesheets/style.css',
-                '/bootstrap-icons/font/bootstrap-icons.css',
-                '/bootstrap/dist/js/bootstrap.js',
-                '/bootstrap/dist/js/bootstrap.bundle.js',
-                '/javascripts/main.js',
-                '/',
-                '/static/images/logo.png',
-                '/static/images/Fruits.png',
-                '/static/images/Flower.png',
-                '/static/images/Seeds.png',
-                '/static/images/favicon.ico',
-                '/static/images/image_icon.png'
-            ]);
+            fetch("http://localhost:3000/image_paths", {
+                method: 'get'
+            }).then(r => {
+git
+                }
+            )
         })
     );
 });

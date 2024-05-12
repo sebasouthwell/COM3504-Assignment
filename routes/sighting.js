@@ -17,17 +17,18 @@ var storage = multer.diskStorage({
 
 let upload = multer({storage});
 
-let stylesheets = ["/bootstrap/dist/css/bootstrap.min.css","/stylesheets/style.css","/bootstrap-icons/font/bootstrap-icons.css"];
-let javascript = ["/jquery/dist/jquery.js","/bootstrap/dist/js/bootstrap.js","/bootstrap/dist/js/bootstrap.bundle.js","javascripts/indexDBHandler.js","javascripts/nickname.js"];
-router.get('/', function(req, res, next) {
+let stylesheets = ["/bootstrap/dist/css/bootstrap.min.css", "/stylesheets/style.css", "/bootstrap-icons/font/bootstrap-icons.css","http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css"];
+let javascript = ["/jquery/dist/jquery.js", "/bootstrap/dist/js/bootstrap.js", "/bootstrap/dist/js/bootstrap.bundle.js", "javascripts/indexDBHandler.js", "javascripts/nickname.js","http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"];
+
+router.get('/', function (req, res, next) {
     js = javascript;
     js.push("/javascripts/locationManager.js");
-    js.push( "/javascripts/searchPlants.js")
+    js.push("/javascripts/searchPlants.js")
     query_map = {};
-    if (!(req.query['i'] && req.query['p'])){
+    if (!(req.query['i'] && req.query['p'])) {
         query_map['status'] = req.query['i'] ? "Identified" : "All";
         query_map['status'] = req.query['p'] ? "Pending" : query_map['status'];
-        if (query_map['status'] === "All"){
+        if (query_map['status'] === "All") {
             delete query_map['status'];
         }
     }
@@ -35,28 +36,24 @@ router.get('/', function(req, res, next) {
     let result = sighting.getAllFilter(query_map);
     result.then((sightings) => {
         let sightings_json = JSON.parse(sightings);
-        if (req.query['sort']){
-            if (req.query['sort'].startsWith('n')){
+        if (req.query['sort']) {
+            if (req.query['sort'].startsWith('n')) {
                 if (req.query['sort'].endsWith('a')) {
                     sightings_json.sort((a, b) => {
                         return a.plantName.localeCompare(b.plantName);
                     });
-                }
-                else
-                {
-                    sightings_json.sort((a,b) => {
+                } else {
+                    sightings_json.sort((a, b) => {
                         return b.plantName.localeCompare(a.plantName);
                     });
                 }
-            }
-            else if (req.query['sort'].startsWith('t')){
-                if (req.query['sort'].endsWith('lr')){
-                    sightings_json.sort((a,b) => {
+            } else if (req.query['sort'].startsWith('t')) {
+                if (req.query['sort'].endsWith('lr')) {
+                    sightings_json.sort((a, b) => {
                         return new Date(a.dateTime) - new Date(b.dateTime);
                     });
-                }
-                else{
-                    sightings_json.sort((a,b) => {
+                } else {
+                    sightings_json.sort((a, b) => {
                         return new Date(b.dateTime) - new Date(a.dateTime);
                     });
                 }
@@ -64,39 +61,51 @@ router.get('/', function(req, res, next) {
         }
         console.log(sightings_json.length);
         res.render('index', {
-            title: 'Planttrest: Plant Sighting Form',stylesheets: stylesheets, javascripts: js, sightings: sightings_json });
+            title: 'Planttrest: Plant Sighting Form',
+            stylesheets: stylesheets,
+            javascripts: js,
+            sightings: sightings_json
+        });
     });
 });
 
-router.get('/sight', function(req, res, next) {
+router.get('/sight', function (req, res, next) {
     js = javascript;
     js.push("javascripts/locationManager.js");
     js.push("javascripts/createSighting.js");
-    res.render('sighting', { title: 'Planttrest: Plant Sighting Form',stylesheets: stylesheets, javascripts: js});
+    res.render('sighting', {title: 'Planttrest: Plant Sighting Form', stylesheets: stylesheets, javascripts: js});
 });
 
 
-router.post('/sight/add',upload.single('photoUpload'),  function (req,res) {
+router.get('/image_paths', function (req, res, next) {
+    let images = sighting.getAllImagePaths().then((images) =>{
+        res.render('image_paths', {images: images});
+    }).catch(() => {
+        res.render('image_paths', {images: null});
+    })
+});
+
+
+router.post('/sight/add', upload.single('photoUpload'), function (req, res) {
     let sightingData = req.body;
     let filePath = "";
-    if (req.file){
-       filePath = req.file.filename;
+    if (req.file) {
+        filePath = req.file.filename;
     }
-    if (sightingData.hasFruit === undefined){
+    if (sightingData.hasFruit === undefined) {
         sightingData.hasFruit = false;
-    }
-    else{
+    } else {
         sightingData.hasFruit = true;
     }
-    if (sightingData.hasSeeds === undefined){
+    if (sightingData.hasSeeds === undefined) {
         sightingData.hasSeeds = false;
-    }else{
+    } else {
         sightingData.hasSeeds = true;
     }
-    if (sightingData.hasFlowers === undefined){
+    if (sightingData.hasFlowers === undefined) {
         sightingData.hasFlowers = false;
         delete sightingData.flowerColour;
-    }else{
+    } else {
         sightingData.hasFlowers = true;
     }
     sightingData.dateTime = new Date(sightingData.dateTime);
@@ -104,15 +113,15 @@ router.post('/sight/add',upload.single('photoUpload'),  function (req,res) {
     result.then((sighting) => {
         let s = JSON.parse(sighting);
         let id = s['_id'].toString();
-        res.redirect('../sight_view/'+id)
+        res.redirect('../sight_view/' + id)
     }).catch((err) => {
         console.log(err);
-        res.render('error',{message: "Error adding sighting", error: err})
+        res.render('error', {message: "Error adding sighting", error: err})
     })
     ;
 });
 
-router.get('/sight_view/:id', function(req, res, next) {
+router.get('/sight_view/:id', function (req, res, next) {
     let js = javascript;
     let css = stylesheets;
     let id = req.params['id'];
@@ -136,18 +145,14 @@ router.get('/sight_view/:id', function(req, res, next) {
     });
 });
 
-router.get('/sun', function(req, res, next) {
+
+router.get('/login', function (req, res, next) {
     js = javascript;
-    res.render('sun',{});
+    res.render('login', {title: 'Planttrest: Login', stylesheets: stylesheets, javascripts: js});
 });
 
-router.get('/login', function(req, res, next) {
-    js = javascript;
-    res.render('login', { title: 'Planttrest: Login',stylesheets: stylesheets, javascripts: js});
-});
-
-router.get('/lions', function(req,res,next){
-    res.render('test', { title: 'Lions'});
+router.get('/lions', function (req, res, next) {
+    res.render('test', {title: 'Lions'});
 });
 
 module.exports = router;

@@ -21,13 +21,10 @@ function updateNickname() {
                 // Find logged in
                 if (user['active']) {
                     nickname = user['name'];
-                    console.log("active");
-
                 }
             }
             var nicknameElement = document.getElementById("nickname");
             if (nicknameElement) {
-                console.log(nickname);
                 nicknameElement.textContent = nickname || "N/A"; // Default
             }
         });
