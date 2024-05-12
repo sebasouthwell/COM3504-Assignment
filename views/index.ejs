@@ -68,7 +68,7 @@
             </nav>
             <div class="pb-2 bg-light rounded mt-1">
                 <div class="d-flex justify-content-center  p-2 text-center">
-                    <% if (sightings.length === 0) { %>
+                    <% if (sightings === null || sightings.length === 0) { %>
                     <h3 id="notFoundSightings"> No sightings found</h3>
                     <% } else { %>
                     <div class="d-flex container row px-0 image-card " id="sightings">

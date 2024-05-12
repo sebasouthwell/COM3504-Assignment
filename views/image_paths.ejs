@@ -1,0 +1,10 @@
+<% if (images === null || images.length === 0) { %>
+    <h3 id="notFoundSightings"> No sightings found</h3>
+<% } else { %>
+
+    <% for(let i = 0; i < images.length; i++) { %>
+        <%= images[i] %>
+        <br>
+    <% } %>
+
+<% } %>
