@@ -1,4 +1,5 @@
-import "/javascripts/indexDBHandler.js"
+//import "/javascripts/indexDBHandler.js"
+importScripts('/javascripts/idb-utility.js');
 
 const CACHE_NAME = 'Plantrest - v1'
 
@@ -17,6 +18,10 @@ self.addEventListener('install', (event) => {
                 '/bootstrap/dist/js/bootstrap.bundle.js',
                 '/javascripts/main.js',
                 '/',
+                '/sight',
+                '/manifest.json',
+                '/javascripts/sighting.js',
+                '/javascripts/idb-utility.js',
                 '/static/images/logo.png',
                 '/static/images/Fruits.png',
                 '/static/images/Flower.png',
@@ -55,18 +60,19 @@ self.addEventListener('fetch', (event) => {
 });
 
 self.addEventListener('sync', event => {
-    if (event.tag === 'sync-todo') {
-        console.log('Service Worker: Syncing new Todos');
-        openSyncTodosIDB().then((syncPostDB) => {
-            getAllSyncTodos(syncPostDB).then((syncTodos) => {
-                for (const syncTodo of syncTodos) {
-                    console.log('Service Worker: Syncing new Todo: ', syncTodo);
-                    console.log(syncTodo.text)
+    console.log('Service Worker: Syncing Started');
+    if (event.tag === 'sync-sighting') {
+        console.log('Service Worker: Syncing new Sightings');
+        openSyncSightingsIDB().then((syncPostDB) => {
+            getAllSyncSightings(syncPostDB).then((syncSightings) => {
+                for (const syncSighting of syncSightings) {
+                    console.log('Service Worker: Syncing new Sighting: ', syncSighting);
+                    console.log(syncSighting.text)
                     // Create a FormData object
                     const formData = new URLSearchParams();
 
                     // Iterate over the properties of the JSON object and append them to FormData
-                    formData.append("text", syncTodo.text);
+                    formData.append("text", syncSighting.text);
 
                     // Fetch with FormData instead of JSON
                     fetch('http://localhost:3000/c', {
@@ -76,14 +82,14 @@ self.addEventListener('sync', event => {
                             'Content-Type': 'application/x-www-form-urlencoded',
                         },
                     }).then(() => {
-                        console.log('Service Worker: Syncing new Todo: ', syncTodo, ' done');
-                        deleteSyncTodoFromIDB(syncPostDB,syncTodo.id);
+                        console.log('Service Worker: Syncing new Sighting: ', syncSighting, ' done');
+                        deleteSyncSightingFromIDB(syncPostDB,syncSighting.id);
                         // Send a notification
-                        self.registration.showNotification('Todo Synced', {
-                            body: 'Todo synced successfully!',
+                        self.registration.showNotification('Sighting Synced', {
+                            body: 'Sighting synced successfully!',
                         });
                     }).catch((err) => {
-                        console.error('Service Worker: Syncing new Todo: ', syncTodo, ' failed');
+                        console.error('Service Worker: Syncing new Sighting: ', syncSighting, ' failed');
                     });
                 }
             });

@@ -1,45 +1,55 @@
-// Function to handle adding a new todo
-const addNewTodoToSync = (syncTodoIDB, txt_val) => {
-    // Retrieve todo text and add it to the IndexedDB
+// Function to handle adding a new sighting
+const addNewSightingToSync = (syncSightingIDB) => {
+    // Retrieve sighting text and add it to the IndexedDB
+    console.log("addNewSightingToSync");
 
-    if (txt_val !== "") {
-        const transaction = syncTodoIDB.transaction(["sync-todos"], "readwrite")
-        const todoStore = transaction.objectStore("sync-todos")
-        const addRequest = todoStore.add({text: txt_val})
-        addRequest.addEventListener("success", () => {
-            console.log("Added " + "#" + addRequest.result + ": " + txt_val)
-            const getRequest = todoStore.get(addRequest.result)
-            getRequest.addEventListener("success", () => {
-                console.log("Found " + JSON.stringify(getRequest.result))
-                // Send a sync message to the service worker
-                navigator.serviceWorker.ready.then((sw) => {
-                    sw.sync.register("sync-todo")
-                }).then(() => {
-                    console.log("Sync registered");
-                }).catch((err) => {
-                    console.log("Sync registration failed: " + JSON.stringify(err))
-                })
-            })
-        })
-    }
+    navigator.serviceWorker.ready.then((sw) => {
+        console.log("addNewSightingToSync sw ready");
+        sw.sync.register("sync-sighting")
+    }).then(() => {
+        console.log("Sync registered");
+    }).catch((err) => {
+        console.log("Sync registration failed: " + JSON.stringify(err))
+    })
+
+    // if (txt_val !== "") {
+    //     const transaction = syncSightingIDB.transaction(["sync-sightings"], "readwrite")
+    //     const sightingStore = transaction.objectStore("sync-sightings")
+    //     const addRequest = sightingStore.add({text: txt_val})
+    //     addRequest.addEventListener("success", () => {
+    //         console.log("Added " + "#" + addRequest.result + ": " + txt_val)
+    //         const getRequest = sightingStore.get(addRequest.result)
+    //         getRequest.addEventListener("success", () => {
+    //             console.log("Found " + JSON.stringify(getRequest.result))
+    //             // Send a sync message to the service worker
+    //             navigator.serviceWorker.ready.then((sw) => {
+    //                 sw.sync.register("sync-sighting")
+    //             }).then(() => {
+    //                 console.log("Sync registered");
+    //             }).catch((err) => {
+    //                 console.log("Sync registration failed: " + JSON.stringify(err))
+    //             })
+    //         })
+    //     })
+    // }
 }
 
-// Function to add new todos to IndexedDB and return a promise
-const addNewTodosToIDB = (todoIDB, todos) => {
+// Function to add new sightings to IndexedDB and return a promise
+const addNewSightingsToIDB = (sightingIDB, sightings) => {
     return new Promise((resolve, reject) => {
-        const transaction = todoIDB.transaction(["todos"], "readwrite");
-        const todoStore = transaction.objectStore("todos");
+        const transaction = sightingIDB.transaction(["sightings"], "readwrite");
+        const sightingStore = transaction.objectStore("sightings");
 
-        const addPromises = todos.map(todo => {
+        const addPromises = sightings.map(sighting => {
             return new Promise((resolveAdd, rejectAdd) => {
-                const addRequest = todoStore.add(todo);
+                const addRequest = sightingStore.add(sighting);
                 addRequest.addEventListener("success", () => {
-                    console.log("Added " + "#" + addRequest.result + ": " + todo.text);
-                    const getRequest = todoStore.get(addRequest.result);
+                    console.log("Added " + "#" + addRequest.result + ": " + sighting.text);
+                    const getRequest = sightingStore.get(addRequest.result);
                     getRequest.addEventListener("success", () => {
                         console.log("Found " + JSON.stringify(getRequest.result));
-                        // Assume insertTodoInList is defined elsewhere
-                        // insertTodoInList(getRequest.result);
+                        // Assume insertSightingInList is defined elsewhere
+                        // insertSightingInList(getRequest.result);
                         resolveAdd(); // Resolve the add promise
                     });
                     getRequest.addEventListener("error", (event) => {
@@ -62,11 +72,11 @@ const addNewTodosToIDB = (todoIDB, todos) => {
 };
 
 
-// Function to remove all todos from idb
-const deleteAllExistingTodosFromIDB = (todoIDB) => {
-    const transaction = todoIDB.transaction(["todos"], "readwrite");
-    const todoStore = transaction.objectStore("todos");
-    const clearRequest = todoStore.clear();
+// Function to remove all sightings from idb
+const deleteAllExistingSightingsFromIDB = (sightingIDB) => {
+    const transaction = sightingIDB.transaction(["sightings"], "readwrite");
+    const sightingStore = transaction.objectStore("sightings");
+    const clearRequest = sightingStore.clear();
 
     return new Promise((resolve, reject) => {
         clearRequest.addEventListener("success", () => {
@@ -82,12 +92,12 @@ const deleteAllExistingTodosFromIDB = (todoIDB) => {
 
 
 
-// Function to get the todo list from the IndexedDB
-const getAllTodos = (todoIDB) => {
+// Function to get the sighting list from the IndexedDB
+const getAllSightings = (sightingIDB) => {
     return new Promise((resolve, reject) => {
-        const transaction = todoIDB.transaction(["todos"]);
-        const todoStore = transaction.objectStore("todos");
-        const getAllRequest = todoStore.getAll();
+        const transaction = sightingIDB.transaction(["sightings"]);
+        const sightingStore = transaction.objectStore("sightings");
+        const getAllRequest = sightingStore.getAll();
 
         // Handle success event
         getAllRequest.addEventListener("success", (event) => {
@@ -102,12 +112,12 @@ const getAllTodos = (todoIDB) => {
 }
 
 
-// Function to get the todo list from the IndexedDB
-const getAllSyncTodos = (syncTodoIDB) => {
+// Function to get the sighting list from the IndexedDB
+const getAllSyncSightings = (syncSightingIDB) => {
     return new Promise((resolve, reject) => {
-        const transaction = syncTodoIDB.transaction(["sync-todos"]);
-        const todoStore = transaction.objectStore("sync-todos");
-        const getAllRequest = todoStore.getAll();
+        const transaction = syncSightingIDB.transaction(["sync-sightings"]);
+        const sightingStore = transaction.objectStore("sync-sightings");
+        const getAllRequest = sightingStore.getAll();
 
         getAllRequest.addEventListener("success", () => {
             resolve(getAllRequest.result);
@@ -120,18 +130,18 @@ const getAllSyncTodos = (syncTodoIDB) => {
 }
 
 // Function to delete a syn
-const deleteSyncTodoFromIDB = (syncTodoIDB, id) => {
-    const transaction = syncTodoIDB.transaction(["sync-todos"], "readwrite")
-    const todoStore = transaction.objectStore("sync-todos")
-    const deleteRequest = todoStore.delete(id)
+const deleteSyncSightingFromIDB = (syncSightingIDB, id) => {
+    const transaction = syncSightingIDB.transaction(["sync-sightings"], "readwrite")
+    const sightingStore = transaction.objectStore("sync-sightings")
+    const deleteRequest = sightingStore.delete(id)
     deleteRequest.addEventListener("success", () => {
         console.log("Deleted " + id)
     })
 }
 
-function openTodosIDB() {
+function openSightingsIDB() {
     return new Promise((resolve, reject) => {
-        const request = indexedDB.open("todos", 1);
+        const request = indexedDB.open("sightings", 1);
 
         request.onerror = function (event) {
             reject(new Error(`Database error: ${event.target}`));
@@ -139,7 +149,7 @@ function openTodosIDB() {
 
         request.onupgradeneeded = function (event) {
             const db = event.target.result;
-            db.createObjectStore('todos', {keyPath: '_id'});
+            db.createObjectStore('sightings', {keyPath: '_id'});
         };
 
         request.onsuccess = function (event) {
@@ -149,9 +159,10 @@ function openTodosIDB() {
     });
 }
 
-function openSyncTodosIDB() {
+function openSyncSightingsIDB() {
+    console.log("openSyncSightingsIDB")
     return new Promise((resolve, reject) => {
-        const request = indexedDB.open("sync-todos", 1);
+        const request = indexedDB.open("sync-sightings", 1);
 
         request.onerror = function (event) {
             reject(new Error(`Database error: ${event.target}`));
@@ -159,7 +170,7 @@ function openSyncTodosIDB() {
 
         request.onupgradeneeded = function (event) {
             const db = event.target.result;
-            db.createObjectStore('sync-todos', {keyPath: 'id', autoIncrement: true});
+            db.createObjectStore('sync-sightings', {keyPath: 'id', autoIncrement: true});
         };
 
         request.onsuccess = function (event) {

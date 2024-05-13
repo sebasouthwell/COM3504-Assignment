@@ -27,7 +27,6 @@ function updateNickname() {
             }
             var nicknameElement = document.getElementById("nickname");
             if (nicknameElement) {
-                console.log(nickname);
                 nicknameElement.textContent = nickname || "N/A"; // Default
             }
         });
