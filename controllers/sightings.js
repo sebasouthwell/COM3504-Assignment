@@ -63,6 +63,7 @@ const parseSighting = function(sighting){
         description: sighting['description'],
         dateTime: sighting['dateTime'],
         DBPediaURL: sighting['DBPediaURL']
+
     }
     return s;
 }
@@ -84,18 +85,20 @@ exports.getAllFilter = function(query_map){
 }
 
 
-exports.getAllImagePaths = function(){
+exports.getAllCache = function(){
     return sightingModel.find(null).then(
         sightings => {
             if (sightings == null){
                 return null;
             }
-            let imagePaths = [];
+            let cachePath = [];
             for (let i = 0; i < sightings.length; i++){
-                console.log(sightings[i].photo);
-                imagePaths.push(sightings[i].photo);
+                cachePath.push('/sight_view/'+sightings[i]._id);
+                if (/\w+/.test(sightings[i].photo)){
+                    cachePath.push('/public/images/uploads/'+sightings[i].photo);
+                }
             }
-            return imagePaths.filter(str => /\w+/.test(str));
+            return cachePath;
         }).catch(err => {
             console.log(err);
             return null;
@@ -108,7 +111,6 @@ exports.getByID = function(id){
     return sightingModel.findById(id).then(sighting => {
         // Create a new object with the lat and long as numbers
         let s = parseSighting(sighting);
-        console.log(s);
         return JSON.stringify(s);
     }).catch(err => {
         console.log(err);

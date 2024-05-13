@@ -1,7 +1,23 @@
-import "/javascripts/indexDBHandler.js"
-
 const CACHE_NAME = 'Plantrest - v1'
-
+const DEFAULT_CACHING_FILES  = [
+    '/bootstrap/dist/css/bootstrap.min.css',
+    '/stylesheets/style.css',
+    '/bootstrap-icons/font/bootstrap-icons.css',
+    "/bootstrap-datetime-picker/css/bootstrap-datetimepicker.css",
+    "/bootstrap-datetime-picker/js/bootstrap-datetimepicker.js",
+    '/bootstrap/dist/js/bootstrap.js',
+    '/bootstrap/dist/js/bootstrap.bundle.js',
+    '/javascripts/createSighting.js',
+    '/javascripts/main.js',
+    '/',
+    '/static/images/logo.png',
+    '/static/images/Fruits.png',
+    '/static/images/Flower.png',
+    '/static/images/Seeds.png',
+    '/static/images/favicon.ico',
+    '/static/images/image_icon.png',
+    '/sight_view'
+];
 
 console.log('Service Worker Called...');
 self.addEventListener('install', (event) => {
@@ -9,12 +25,23 @@ self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME).then(function (cache_obj) {
             console.log('[ServiceWorker] Caching app shell');
-            fetch("http://localhost:3000/image_paths", {
+            fetch("http://localhost:3000/cache_links", {
                 method: 'get'
             }).then(r => {
-git
+                console.log("Cache JSON");
+                r.json().then(rjson => {
+                    console.log(rjson);
+                    cache_obj.addAll(rjson);
+                    cache_obj.addAll(DEFAULT_CACHING_FILES);
+                }).catch(() =>{
+                    cache_obj.addAll(DEFAULT_CACHING_FILES);
+                })
                 }
-            )
+            ).catch(() => {
+                cache_obj.addAll(DEFAULT_CACHING_FILES);
+            })
+        }).catch(() =>{
+            console.log("Failed to cache");
         })
     );
 });
@@ -41,6 +68,8 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
         caches.match(request).then(function(response){
             return response || fetch(request);
+        }).catch((error) => {
+          console.log('Could not find in cache');
         })
     );
 });

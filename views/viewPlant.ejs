@@ -3,32 +3,32 @@
     <div class="row">
         <div class="pb-2 bg-light rounded">
             <div class="p-2 text-center">
-                <h2 class="text-primary">Sighting on <%= new Date(sighting.dateTime).toString().substring(0,24) %> </h2>
+                <h2 class="text-primary" id="sightingDate">Sighting on <%= new Date(sighting.dateTime).toString().substring(0,24) %> </h2>
             </div>
             <div>
                 <div class="row p-3">
                     <div class="col pt-4 ps-lg-4">
-                        <p class="text-success">Seen by: <%= sighting.userNickName %> </p>
+                        <p class="text-success" id="sightingNick">Seen by: <%= sighting.userNickName %> </p>
                         <br>
-                        <p class="text-success">Name:  <%= sighting.givenName %></p>
-                        <p class="text-success">Status: <%= sighting.identificationStatus %></p>
-                        <p class="text-success">Description: <%= sighting.description %></p>
+                        <p class="text-success" id="sightingGiven">Name:  <%= sighting.givenName %></p>
+                        <p class="text-success" id="sightingStatus">Status: <%= sighting.identificationStatus %></p>
+                        <p class="text-success" id="sightingDesc">Description: <%= sighting.description %></p>
                         <br>
-                        <p class="text-success">Location: <%= sighting.lat.valueOf().toString() %>, <%= sighting.long.valueOf().toString() %></p>
-                        <p class="text-success">Sun exposure: <%= sighting.sunExposureLevel %>%</p>
+                        <p class="text-success" id="sightingLoc">Location: <%= sighting.lat.valueOf().toString() %>, <%= sighting.long.valueOf().toString() %></p>
+                        <p class="text-success" id="sightingExposure">Sun exposure: <%= sighting.sunExposureLevel %>%</p>
                         <div class="d-flex row flex-row ">
                             <% if(sighting.hasSeeds){ %>
-                                <div class="thumbnail me-2">
+                                <div class="thumbnail me-2" id="sightingSeeds">
                                     <img src="/static/images/Seeds.png" alt="Has seeds" class="rounded thumbnail border border-3 border-black">
                                 </div>
                             <% } %>
                             <% if(sighting.hasFruit){ %>
-                                <div class="thumbnail mx-2">
+                                <div class="thumbnail mx-2" id="sightingFruits">
                                     <img src="/static/images/Fruits.png" class="rounded thumbnail border border-3 border-black">
                                 </div>
                             <% } %>
                             <% if(sighting.hasFlowers){ %>
-                                <div class="thumbnail mx-2">
+                                <div class="thumbnail mx-2" id="sightingFlower">
                                     <img src="/static/images/Flower.png" class="rounded thumbnail border border-3 border-black" style="<%= sighting.flowerColour ? "background-color: " + sighting.flowerColour + " !important;" : "" %>">
                                 </div>
                             <% } %>
@@ -41,10 +41,10 @@
                             <div class="rounded-top bg-secondary-subtle col-8">
                                 <div class="row">
                                     <div class="d-flex align-items-center col-4 justify-content-end pt-4">
-                                        <p class="d-flex align-items-center text-success text-end">Height: <%= sighting.plantEstHeight %>cm<i class="bi bi-arrows-vertical text-success h1" ></i></p>
+                                        <p class="d-flex align-items-center text-success text-end" id="sightingHeight">Height: <%= sighting.plantEstHeight %>cm<i class="bi bi-arrows-vertical text-success h1" ></i></p>
                                     </div>
                                     <div class="col-8 justify-content-center pt-4 pe-4">
-                                        <img class="rounded w-100" src="/public/images/uploads/<%= sighting.photo %>"><br>
+                                        <img class="rounded w-100" id="sightingPhoto" src="<%= sighting.photo %>"><br>
                                     </div>
                                 </div>
                             </div>
@@ -57,7 +57,7 @@
                                 <div class="col-4"></div>
                                 <div class="col-8 text-center pe-4">
                                     <i class="bi bi-arrows text-success h1 text-center"></i>
-                                    <p class="text-success">Spread: <%= sighting.plantEstSpread %>cm</p>
+                                    <p class="text-success" id="sightingSpread">Spread: <%= sighting.plantEstSpread %>cm</p>
                                 </div>
                             </div>
                             <div class="col-2"></div>

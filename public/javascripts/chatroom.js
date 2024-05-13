@@ -14,15 +14,7 @@ function init() {
     document.getElementById('chat_interface').style.display = 'none';
 
     // called when someone joins the room. If it is someone else it notifies the joining of the room
-    socket.on('joined', function (room, userId) {
-        if (userId === name) {
-            // it enters the chat
-            hideLoginInterface(room, userId);
-        } else {
-            // notifies that someone has joined the room
-            writeOnHistory('<b>'+userId+'</b>' + ' joined room ' + room);
-        }
-    });
+
     // called when a message is received
     socket.on('chat', function (room, userId, chatText) {
         let who = userId
@@ -48,6 +40,7 @@ function generateRoom() {
  */
 function sendChatText() {
     let chatText = document.getElementById('chat_input').value;
+
     socket.emit('chat', roomNo, name, chatText);
 }
 

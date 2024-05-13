@@ -1,7 +1,14 @@
-import {Types as ol} from "mongoose";
-
 window.addEventListener('load', function () {
-    document.getElementById('dateTime').value = new Date().toISOString()
+    let date = (new Date()).toISOString();
+    date = date.split('T')[0] + " " + date.split('T')[1].split('.')[0];
+    $('#dateTime').val(date.substring(0,date.length-3));
+    $('#dateTime').datetimepicker();
+    $('#dateTime').datetimepicker('setStartDate', '2012-01-01');
+    let colorInput = document.getElementById('flowerColour');
+    let colorPreview = document.getElementById('colorPreview');
+
+    // Set initial color preview
+    colorPreview.style.backgroundColor = colorInput.value;
     var form = document.getElementById('sightingForm');
     form.addEventListener('submit', function (event) {
         // Check if online or offline
@@ -17,7 +24,6 @@ window.addEventListener('load', function () {
             }
             if (formArray['photoUpload'] != ""){
                 var photoFile = event.target.files[0];
-                form
             }
             console.log(formArray);
             createSighting();
@@ -39,11 +45,8 @@ function showColour(){
     }
 }
 // Get elements
-const colorInput = document.getElementById('colorInput');
-const colorPreview = document.getElementById('colorPreview');
-
-// Set initial color preview
-colorPreview.style.backgroundColor = colorInput.value;
+let colorInput = null;
+let colorPreview = null;
 
 // Update color preview when input changes
 colorInput.addEventListener('input', function() {
