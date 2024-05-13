@@ -76,6 +76,16 @@ router.get('/sight', function (req, res, next) {
     res.render('sighting', {title: 'Planttrest: Plant Sighting Form', stylesheets: stylesheets, javascripts: js});
 });
 
+// route to get all sightings
+router.get('/sightings', function (req, res, next) {
+    sighting.getAll().then(sightings => {
+        console.log(sightings);
+        return res.status(200).send(sightings);
+    }).catch(err => {
+        console.log(err);
+        res.status(500).send(err);
+    });
+})
 
 router.get('/cache_links', function (req, res, next) {
     let images = sighting.getAllCache().then((images) =>{
@@ -119,9 +129,8 @@ router.post('/sight/add', upload.single('photoUpload'), function (req, res) {
         res.redirect('../sight_view/' + id)
     }).catch((err) => {
         console.log(err);
-        res.render('error', {message: "Error adding sighting", error: err})
-    })
-    ;
+        res.render('error',{message: "Error adding sighting", error: err})
+    });
 });
 
 router.get('/sight_view/:id', function (req, res, next) {

@@ -34,7 +34,20 @@ window.addEventListener('load', function () {
 
 function createSighting() {
     // Summarises the form via getting innerHTML of the form
+    console.log("createSighting");
     let form = document.getElementById('sightingForm');
+
+    openSyncSightingsIDB().then((db) => {
+        addNewSightingToSync(db);
+    });
+    navigator.serviceWorker.ready
+        .then(function (serviceWorkerRegistration) {
+            serviceWorkerRegistration.showNotification("Sighting App",
+                {body: "Sighting added! - "})
+                .then(r =>
+                    console.log(r)
+                );
+        });
 
 }
 function showColour(){
