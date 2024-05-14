@@ -43,7 +43,7 @@ window.addEventListener('load', function () {
             let guid = generateQuickGuid()
 
             let sighting = {
-                _id: guid, userNickName: $("#userNickName").val(),givenName: $("#givenName").val(),description:$('#description').val(),lat: $('#lat').val(),long: $('#long').val(), plantEstHeight: $('#plantEstHeight').val(), plantEstSpread: $('#plantEstSpread').val(), hasFlowers: $('#hasFlowers').val() === 'on', flowerColour: $('#flowerColour').val(), hasFruit: $('#hasFruit').val()==='on', hasSeeds: $('#hasSeeds').val()==='on', sunExposureLevel: $('#sunExposureLevel').val(), dateTime: $('#dateTime').val(), identificationStatus: $('#identificationStatus').val(), photo: imageString
+                _id: guid, userNickName: $("#userNickName").val(),givenName: $("#givenName").val(),description:$('#description').val(),lat: $('#lat').val(),long: $('#long').val(), plantEstHeight: $('#plantEstHeight').val(), plantEstSpread: $('#plantEstSpread').val(), hasFlowers: $('#hasFlowers').is(':checked'), flowerColour: $('#flowerColour').val(), hasFruit: $('#hasFruit').is(':checked'), hasSeeds: $('#hasSeeds').is(':checked'), sunExposureLevel: $('#sunExposureLevel').val(), dateTime: $('#dateTime').val(), identificationStatus: $('#identificationStatus').val(), photo: imageString
             }
             if (checkValidity(sighting)){
                 handler.update(sightings,guid,sighting,() => {

@@ -75,7 +75,7 @@
                     <div class="d-flex container row px-0 image-card " id="sightings">
                         <% for(let i = 0; i < sightings.length; i++) { %>
                             <div class="card text-white w-24 p-0 m-1" >
-                                <input type="text" id="plantId" name="plantId" hidden="" value="sightings[i]._id">
+                                <input type="text" id="plantId" name="plantId" hidden="" value="<%= sightings[i]._id %>">
                                 <a href="/sight_view/<%= sightings[i]._id %>"><img class="card-img w-100 h-100" src="<%= sightings[i].photo === "" ? 'https://hips.hearstapps.com/hmg-prod/images/high-angle-view-of-variety-of-succulent-plants-royalty-free-image-1584462052.jpg' :"/images/uploads/" + sightings[i].photo %>" alt="Card image">
                                     <div class="d-flex card-img-overlay w-100 h-100 p-1 align-items-end">
                                         <div class="w-100 d-flex">
@@ -100,6 +100,7 @@
                                         <h5 class="card-title text-white">Plant Name: <%= sightings[i].plantName %></h5>
                                         <p class="card-text text-white">Date: <%= new Date(sightings[i].dateTime).toString().substring(0,24) %></p>
                                         <p class="card-text text-white">Reported by: <%= sightings[i].userNickName %></p>
+                                        <p class="hidden"><%=sightings[i].lat%>,<%= sightings[i].long %></p>
                                     </div>
                                 </a>
                             </div>
@@ -111,13 +112,32 @@
     </div>
 </div>
 </div>
-<script>
-    // Check if the device is online
-    if (navigator.onLine) {
-        // If online, force reload the page to get latest sightings
-        window.location.reload(); // Pass true to force a reload from the server (bypassing the cache)
-    }
 
+<div class="card text-white w-24 p-0 m-1 hidden" id="template">
+    <input type="text" id="plantId" name="plantId" hidden="" value="id_template">
+    <a href="/sight_view?id="><img class="card-img w-100 h-100" src='plantImage' alt="Card image">
+        <div class="d-flex card-img-overlay w-100 h-100 p-1 align-items-end">
+            <div class="w-100 d-flex options">
+                    <div class="rounded thumbnail-sm me-2 seed_view">
+                        <img src="/static/images/Seeds.png" alt="Has seeds" class="rounded thumbnail-sm border border-3 border-black" alt="Has Seeds">
+                    </div>
+                    <div class="rounded thumbnail-sm me-2 fruit_view">
+                        <img src="/static/images/Fruits.png" alt="Has fruits" class="rounded thumbnail-sm border border-3 border-black" alt="Has Fruits">
+                    </div>
+                    <div class="rounded thumbnail-sm me-2 flower_view">
+                        <img src="/static/images/Flower.png" alt="Has flowers" class="rounded thumbnail-sm border border-3 border-black" alt="Has Flowers">
+                    </div>
+            </div>
+        </div>
+        <div class="card-img-overlay mouseover-overlay">
+            <h5 class="card-title text-white">Plant Name: NamePlant</h5>
+            <p class="card-text text-white">Date: SightDate</p>
+            <p class="card-text text-white">Reported by: ReporterName</p>
+            <p class="hidden">LatLong</p>
+        </div>
+    </a>
+</div>
+<script>
     //  Javascript to check all navigation values and redirect to a url with those values
     let sort = false
     function setSort(value){
@@ -130,11 +150,6 @@
         let p = document.getElementById('pending').checked
         let radius = document.getElementById('radius').value
         console.log(s,f,i,p, radius, sort)
-    }
-</script>
-<script>
-    if('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js', { scope: '/' });
     }
 </script>
 <%- include('partials/footer') %>

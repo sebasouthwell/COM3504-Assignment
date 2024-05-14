@@ -13,17 +13,18 @@ window.addEventListener('load', () => {
           $('#sightingDate')[0].innerHTML = 'Sighting on '+ new Date(result['dateTime']).toString().substring(0,24)
           $('#sightingExposure')[0].innerHTML = 'Sun exposure: ' + result['sunExposureLevel']
           $('#sightingStatus')[0].innerHTML = 'Status: ' + result['identificationStatus']
-          if (!result['hasFlowers']){
-              document.getElementById('sightingFlower').delete();
+          console.log(result);
+          if (result['hasFlowers'] === false){
+              document.getElementById('sightingFlower').remove();
           }
           else{
               document.getElementById('sightingFlower').children[0].style = "background-color: " + result['flowerColour'] +" !important;"
           }
-          if (!result['hasFruit']){
-              document.getElementById('sightingFruit').delete();
+          if (result['hasFruit'] === false){
+              document.getElementById('sightingFruits').remove();
           }
-          if (!result['hasSeeds']){
-              document.getElementById('sightingSeeds').delete();
+          if (result['hasSeeds'] === false){
+              document.getElementById('sightingSeeds').remove();
           }
           $('#sightingHeight')[0].innerHTML = 'Height: ' + result['plantEstHeight'] + "cm";
           $('#sightingSpread')[0].innerHTML = 'Spread: '+ result['plantEstSpread'] + "cm";
