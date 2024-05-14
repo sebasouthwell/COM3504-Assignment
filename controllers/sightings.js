@@ -95,7 +95,7 @@ exports.getAllCache = function(){
             for (let i = 0; i < sightings.length; i++){
                 cachePath.push('/sight_view/'+sightings[i]._id);
                 if (/\w+/.test(sightings[i].photo)){
-                    cachePath.push('/public/images/uploads/'+sightings[i].photo);
+                    cachePath.push('/images/uploads/'+sightings[i].photo);
                 }
             }
             return cachePath;
@@ -104,6 +104,22 @@ exports.getAllCache = function(){
             return null;
         });
 };
+
+exports.getIDsByNickname = function(nickname){
+    return sightingModel.find({userNickName: nickname}).then(sightings => {
+        if (sightings == null){
+            return null;
+        }
+        let sightingsJSON = JSON.stringify(sightings);
+        let name_ids = [];
+        for (let i = 0; i < sightings.length; i++){
+            name_ids.push(sightings[i]._id);
+        }
+        return name_ids;
+    }).catch(err => {
+        return [];
+    });
+}
 
 
 

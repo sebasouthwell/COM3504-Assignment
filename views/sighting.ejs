@@ -5,8 +5,8 @@
             <div class="p-2 text-center">
                 <h2 class="text-primary">Record plant sighting</h2>
             </div>
-            <form action="/sight/add" method="POST" enctype='multipart/form-data' id="sightingForm" name="sightingForm">
-                <div class="form-group pt-1">
+            <form action="/sight" method="POST" enctype='multipart/form-data' id="sightingForm" name="sightingForm">
+                <div class="form-group pt-1 hidden">
                     <label for="userNickName">Nickname<sup class="star">*</sup>: </label>
                     <input class="form-control" type="text" id="userNickName" name="userNickName" required>
                 </div>
@@ -101,6 +101,7 @@
                         <option value="Identified">Identified</option>
                     </select>
                 </div>
+
                 <input class="btn btn-success mt-2 w-100" type="submit" onclick="createSighting();" value="Save">
             </form>
         </div>

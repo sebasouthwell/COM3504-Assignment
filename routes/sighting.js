@@ -18,7 +18,7 @@ var storage = multer.diskStorage({
 let upload = multer({storage});
 
 let stylesheets = ["/bootstrap/dist/css/bootstrap.min.css", "/stylesheets/style.css", "/bootstrap-icons/font/bootstrap-icons.css", "/bootstrap-datetime-picker/css/bootstrap-datetimepicker.css", "http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css"];
-let javascript = ["/jquery/dist/jquery.js", "/bootstrap/dist/js/bootstrap.js", "/bootstrap/dist/js/bootstrap.bundle.js", "/bootstrap-datetime-picker/js/bootstrap-datetimepicker.js", "/javascripts/indexDBHandler.js", "/javascripts/nickname.js","http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"];
+let javascript = [ "https://cdn.socket.io/4.5.4/socket.io.min.js", "/jquery/dist/jquery.js", "/bootstrap/dist/js/bootstrap.js", "/bootstrap/dist/js/bootstrap.bundle.js", "/bootstrap-datetime-picker/js/bootstrap-datetimepicker.js", "/javascripts/indexDBHandler.js", "/javascripts/name_and_sockets.js","/javascripts/sighting.js","http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"];
 
 router.get('/', function (req, res, next) {
     js = javascript.slice();
@@ -90,16 +90,26 @@ router.get('/sightings', function (req, res, next) {
 router.get('/cache_links', function (req, res, next) {
     let images = sighting.getAllCache().then((images) =>{
         if (images == null) {
-            res.render('cache_links', {images: null});
+            res.status(200).send([]);
         }
-        res.render('cache_links', {images: images});
+        res.status(200).send(images)
     }).catch(() => {
-        res.render('cache_links', {images: null});
+        res.status(200).send([]);
     })
-});
+})
 
+router.get('/user_sightings/:nickname', function (req, res, next) {
+    let nicknameValue = req.params['nickname'];
+    sighting.getIDsByNickname(nicknameValue).then(sightingIDs => {
+        console.log(sightingIDs);
+        return res.status(200).send(sightingIDs);
+    }).catch(err => {
+        console.log(err);
+        res.status(500).send(err);
+    });
+})
 
-router.post('/sight/add', upload.single('photoUpload'), function (req, res) {
+router.post('/sight', upload.single('photoUpload'), function (req, res) {
     let sightingData = req.body;
     let filePath = "";
     if (req.file) {
@@ -122,6 +132,7 @@ router.post('/sight/add', upload.single('photoUpload'), function (req, res) {
         sightingData.hasFlowers = true;
     }
     sightingData.dateTime = new Date(sightingData.dateTime);
+
     let result = sighting.create(sightingData, filePath);
     result.then((sighting) => {
         let s = JSON.parse(sighting);
@@ -135,11 +146,10 @@ router.post('/sight/add', upload.single('photoUpload'), function (req, res) {
 
 router.get('/sight_view/:id', function (req, res, next) {
     let js = javascript.slice();
+    js.push('/javascripts/syncSightings.js')
     let css = stylesheets;
     let id = req.params['id'];
-    console.log(id);
     let result = sighting.getByID(id);
-
     result.then((sighting) => {
         if (sighting === null || sighting === "null") {
             res.status(404).send("Sighting not found");
@@ -148,13 +158,13 @@ router.get('/sight_view/:id', function (req, res, next) {
             // extract the lat and long from the Schema.Types.Decimal128,
             // and convert them to a number
             if (jsSighting.photo != null && jsSighting.photo.length != 0) {
-                jsSighting.photo = "/public/images/uploads/" + jsSighting.photo;
+                jsSighting.photo = "/images/uploads/" + jsSighting.photo;
             }
             else{
                 jsSighting.photo = 'https://hips.hearstapps.com/hmg-prod/images/high-angle-view-of-variety-of-succulent-plants-royalty-free-image-1584462052.jpg';
             }
             res.render('viewPlant', {
-                title: 'Planttrest: WSPlant Sighting Form',
+                title: 'Planttrest: Plant Sighting Form',
                 stylesheets: css,
                 javascripts: js,
                 sighting: jsSighting
@@ -168,6 +178,7 @@ router.get('/sight_view/:id', function (req, res, next) {
 router.get('/sight_view', (req, res) => {
     let js = javascript.slice();
     js.push('javascripts/localSightView.js');
+
     let css = stylesheets
     template = {
         userNickName: "NickName-Template",
@@ -190,7 +201,8 @@ router.get('/sight_view', (req, res) => {
 
 
 router.get('/login', function (req, res, next) {
-    js = javascript;
+    js = javascript.slice();
+    js.push("/javascripts/login.js");
     res.render('login', {title: 'Planttrest: Login', stylesheets: stylesheets, javascripts: js});
 });
 

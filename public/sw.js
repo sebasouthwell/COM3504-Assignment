@@ -2,6 +2,7 @@ importScripts('/javascripts/idb-utility.js');
 
 const CACHE_NAME = 'Plantrest - v1'
 const DEFAULT_CACHING_FILES  = [
+    "/jquery/dist/jquery.js",
     '/bootstrap/dist/css/bootstrap.min.css',
     '/stylesheets/style.css',
     '/bootstrap-icons/font/bootstrap-icons.css',
@@ -9,16 +10,30 @@ const DEFAULT_CACHING_FILES  = [
     "/bootstrap-datetime-picker/js/bootstrap-datetimepicker.js",
     '/bootstrap/dist/js/bootstrap.js',
     '/bootstrap/dist/js/bootstrap.bundle.js',
-    '/javascripts/createSighting.js',
+    '/bootstrap-icons/font/fonts/bootstrap-icons.woff?dd67030699838ea613ee6dbda90effa6',
+    '/bootstrap-icons/font/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6',
+    '/bootstrap-icons/bootstrap-icons.svg',
     '/javascripts/main.js',
+    '/javascripts/name_and_sockets.js',
+    '/javascripts/locationManager.js',
+    '/javascripts/indexDBHandler.js',
+    '/javascripts/createSighting.js',
+    '/javascripts/mainModule.js',
+    '/javascripts/searchPlants.js',
+    '/javascripts/sighting.js',
+    "/javascripts/login.js",
+    '/sight',
     '/',
+    '/manifest.json',
+    '/javascripts/idb-utility.js',
     '/static/images/logo.png',
     '/static/images/Fruits.png',
     '/static/images/Flower.png',
     '/static/images/Seeds.png',
     '/static/images/favicon.ico',
     '/static/images/image_icon.png',
-    '/sight_view'
+    '/sight_view',
+    'https://cdn.socket.io/4.5.4/socket.io.min.js'
 ];
 
 console.log('Service Worker Called...');
@@ -30,9 +45,7 @@ self.addEventListener('install', (event) => {
             fetch("http://localhost:3000/cache_links", {
                 method: 'get'
             }).then(r => {
-                console.log("Cache JSON");
                 r.json().then(rjson => {
-                    console.log(rjson);
                     cache_obj.addAll(rjson);
                     cache_obj.addAll(DEFAULT_CACHING_FILES);
                 }).catch(() =>{
@@ -44,25 +57,7 @@ self.addEventListener('install', (event) => {
             })
         }).catch(() =>{
             console.log("Failed to cache");
-            return cache_obj.addAll([
-                '/bootstrap/dist/css/bootstrap.min.css',
-                '/stylesheets/style.css',
-                '/bootstrap-icons/font/bootstrap-icons.css',
-                '/bootstrap/dist/js/bootstrap.js',
-                '/bootstrap/dist/js/bootstrap.bundle.js',
-                '/javascripts/main.js',
-                '/',
-                '/sight',
-                '/manifest.json',
-                '/javascripts/sighting.js',
-                '/javascripts/idb-utility.js',
-                '/static/images/logo.png',
-                '/static/images/Fruits.png',
-                '/static/images/Flower.png',
-                '/static/images/Seeds.png',
-                '/static/images/favicon.ico',
-                '/static/images/image_icon.png'
-            ]);
+            return cache_obj.addAll(DEFAULT_CACHING_FILES);
         })
     );
 });
@@ -90,7 +85,7 @@ self.addEventListener('fetch', (event) => {
         caches.match(request).then(function(response){
             return response || fetch(request);
         }).catch((error) => {
-          console.log('Could not find in cache');
+            console.log('Could not find in cache');
         })
     );
 });

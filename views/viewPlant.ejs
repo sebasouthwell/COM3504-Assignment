@@ -1,5 +1,6 @@
 <%- include('partials/header',{title: title,stylesheets: stylesheets, javascripts: javascripts, sighting:sighting}) %>
-<div class="container pt-1 pb-1">
+<input type="text" id="plantId" value="<%= sighting.id %>" hidden>
+<div class="container pt-1 pb-1" onload="generateRoom()">
     <div class="row">
         <div class="pb-2 bg-light rounded">
             <div class="p-2 text-center">
@@ -78,6 +79,7 @@
                                 <form onsubmit="return false;" style="width: 100%">
                                     <p>
                                         <input type="text" id="chat_input" name="chat_input" style="width: 80%">
+                                        <input type="text" id="plantId" value="<%= sighting.id %>" hidden>
                                         <button id="chat_send" onclick="sendChatText()">Send</button>
                                     </p>
                                 </form>
@@ -88,6 +90,5 @@
             </div>
         </div>
     </div>
-    <script src="/javascripts/syncSightings.js"></script>
 </div>
 <%- include('partials/footer') %>

@@ -1,5 +1,16 @@
 "use strict";
-
+let objStores = {
+    user_data: {
+        autoIncrement: true,
+        unique: true
+    },
+    sightings: {
+        autoIncrement: true,
+        unique: false
+    }
+};
+let user_data = "user_data";
+let sightings = "sightings";
 class indexDBHandler{
     constructor(dbName,objStores,debug=false){
         this.indexedDB = indexedDB;
@@ -91,3 +102,4 @@ class indexDBHandler{
         });
     }
 }
+let handler = new indexDBHandler('application', objStores, true);
