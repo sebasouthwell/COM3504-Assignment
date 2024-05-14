@@ -41,18 +41,18 @@ window.addEventListener('load', function () {
                     Math.random().toString(36).substring(2, 25);
             }
             let guid = generateQuickGuid()
-
-            let sighting = {
-                _id: guid, userNickName: $("#userNickName").val(),givenName: $("#givenName").val(),description:$('#description').val(),lat: $('#lat').val(),long: $('#long').val(), plantEstHeight: $('#plantEstHeight').val(), plantEstSpread: $('#plantEstSpread').val(), hasFlowers: $('#hasFlowers').is(':checked'), flowerColour: $('#flowerColour').val(), hasFruit: $('#hasFruit').is(':checked'), hasSeeds: $('#hasSeeds').is(':checked'), sunExposureLevel: $('#sunExposureLevel').val(), dateTime: $('#dateTime').val(), identificationStatus: $('#identificationStatus').val(), photo: imageString
-            }
-            if (checkValidity(sighting)){
-                handler.update(sightings,guid,sighting,() => {
-                  makeNotification('Sighting Saved: Offline Mode', {body: 'You are currently offline, your sighting has been saved to you browser and will be uploaded once you regain server connection'});
-                })
-                window.location.href = window.origin + '/sight_view?id=' + guid;
-            }
-
-            console.log(sighting)
+            setTimeout(() => {
+                let sighting = {
+                    _id: guid, userNickName: $("#userNickName").val(),givenName: $("#givenName").val(),description:$('#description').val(),lat: $('#lat').val(),long: $('#long').val(), plantEstHeight: $('#plantEstHeight').val(), plantEstSpread: $('#plantEstSpread').val(), hasFlowers: $('#hasFlowers').is(':checked'), flowerColour: $('#flowerColour').val(), hasFruit: $('#hasFruit').is(':checked'), hasSeeds: $('#hasSeeds').is(':checked'), sunExposureLevel: $('#sunExposureLevel').val(), dateTime: $('#dateTime').val(), identificationStatus: $('#identificationStatus').val(), photo: imageString
+                }
+                if (checkValidity(sighting)){
+                    handler.update(sightings,guid,sighting,() => {
+                        makeNotification('Sighting Saved: Offline Mode', {body: 'You are currently offline, your sighting has been saved to you browser and will be uploaded once you regain server connection'});
+                    })
+                    window.location.href = window.origin + '/sight_view?id=' + guid;
+                }
+                console.log(sighting);
+            },100)
         }
         else{
 
