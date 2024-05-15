@@ -1,10 +1,11 @@
 <%- include('partials/header',{title: title,stylesheets: stylesheets, javascripts: javascripts}) %>
+<body onload="prefillValues()">
 <div class="container pt-1 pb-1">
     <div class="row">
         <div class="pb-2 bg-light rounded">
             <nav class="navbar navbar-expand-lg bg-body-tertiary">
                 <div class="container-fluid">
-                    <form class="collapse navbar-collapse pt-2" id="navbarSupportedContent">
+                    <div class="collapse navbar-collapse pt-2" id="navbarSupportedContent">
                         <div class="dropdown ps-sm-2">
                             <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
                                 Features
@@ -43,7 +44,8 @@
                             <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownSearch" data-bs-toggle="dropdown" aria-expanded="false">
                                 Sort by
                             </a>
-                            <ul class="dropdown-menu" aria-labelledby="dropdownSearch">
+                            <input id="sort" hidden>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownSearch" onclick="getLocation('lat_nav','long_nav','get_location')">
                                 <li><a class="dropdown-item" id="t-mr" onclick="setSort('t-mr')">Most recent</a></li>
                                 <li><a class="dropdown-item" id="t-lr" onclick="setSort('t-lr')">Least recent</a></li>
                                 <li><a class="dropdown-item" id="n-az" onclick="setSort('n-az')">Name (A-Z) [Unknown at End]</a></li>
@@ -53,17 +55,17 @@
                             </ul>
                         </div>
                         <div class=" ps-sm-2">
-                            <input type="number" class="form-control" id="radius" placeholder="Enter radius">
+                            <input type="number" class="form-control" id="radius" placeholder="Enter radius" onclick="getLocation('lat_nav','long_nav','get_location')">
                         </div>
                         <div class="form-group hidden">
                             <input class="form-control lat_nav" type="string" id="lat" name="lat" value="">
                             <input class="form-control long_nav" type="string" id="long" name="long" value="">
                         </div>
                         <div class="d-flex ps-sm-2" >
-                            <input class="form-control me-2" id="plantName"  placeholder="Name" >
+                            <input  class="form-control me-2" id="plantName" placeholder="Name" >
                         </div>
                         <button class="btn btn-outline-success" onclick="redirectPage()">Search</button>
-                    </form>
+                    </div>
                 </div>
             </nav>
             <div class="pb-2 bg-light rounded mt-1">
@@ -105,22 +107,9 @@
                     <% } %>
                 </div>
             </div>
+            </div>
         </div>
     </div>
 </div>
-<!-- Javascript to check all navigation values and redirect to a url with those values-->
-<!--<script>-->
-<!--    let sort = false-->
-<!--    function setSort(value){-->
-<!--       sort = value-->
-<!--    }-->
-<!--    function redirectPage() {-->
-<!--        let s =document.getElementById('seeds').checked-->
-<!--        let f = document.getElementById('fruit').checked-->
-<!--        let i = document.getElementById('identified').checked-->
-<!--        let p = document.getElementById('pending').checked-->
-<!--        let radius = document.getElementById('radius').value-->
-<!--        console.log(s,f,i,p, radius, sort)-->
-<!--    }-->
-<!--</script>-->
+</body>
 <%- include('partials/footer') %>

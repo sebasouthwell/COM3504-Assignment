@@ -38,4 +38,5 @@ function getCurrentLocation() {
     lat = result.coords.latitude; // latitude value
     long = result.coords.longitude; // longitude value
   });
+  return [lat, long]
 }

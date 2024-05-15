@@ -2,7 +2,6 @@ var express = require('express');
 var router = express.Router();
 var sighting = require('../controllers/sightings');
 var multer = require('multer');
-
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, 'public/images/uploads/')
@@ -18,27 +17,21 @@ var storage = multer.diskStorage({
 let upload = multer({storage});
 
 let stylesheets = ["/bootstrap/dist/css/bootstrap.min.css","/stylesheets/style.css","/bootstrap-icons/font/bootstrap-icons.css"];
-let javascript = ["/jquery/dist/jquery.js","/bootstrap/dist/js/bootstrap.js","/bootstrap/dist/js/bootstrap.bundle.js","javascripts/indexDBHandler.js","javascripts/nickname.js"];
+let javascript = ["/jquery/dist/jquery.js","/bootstrap/dist/js/bootstrap.js","/bootstrap/dist/js/bootstrap.bundle.js","/javascripts/indexDBHandler.js","/javascripts/nickname.js"];
 
 router.get('/', function(req, res, next) {
     js = javascript;
-    js.push("javascripts/locationManager.js");
-    js.push( "javascripts/searchPlants.js")
-    query_map = {};
-    if (!(req.query['i'] && req.query['p'])){
-        query_map['status'] = req.query['i'] ? "Identified" : "All";
-        query_map['status'] = req.query['p'] ? "Pending" : query_map['status'];
-        if (query_map['status'] === "All"){
-            delete query_map['status'];
-        }
-    }
-    // Create name filter with wildcards
-    let result = sighting.getAllFilter(query_map);
+    js.push("/javascripts/locationManager.js");
+    js.push("/javascripts/searchPlants.js");
+
+    let sortBy = req.query['sort'];
+    let currentLocation = req.query['coords'];
+    let result = sighting.getAllFilter(req.query);
     result.then((sightings) => {
         let sightings_json = JSON.parse(sightings);
-        if (req.query['sort']){
-            if (req.query['sort'].startsWith('n')){
-                if (req.query['sort'].endsWith('a')) {
+        if (sortBy){
+            if (sortBy.startsWith('n')){
+                if (sortBy.endsWith('a')) {
                     sightings_json.sort((a, b) => {
                         return a.plantName.localeCompare(b.plantName);
                     });
@@ -50,8 +43,8 @@ router.get('/', function(req, res, next) {
                     });
                 }
             }
-            else if (req.query['sort'].startsWith('t')){
-                if (req.query['sort'].endsWith('lr')){
+            else if (sortBy.startsWith('t')){
+                if (sortBy.endsWith('lr')){
                     sightings_json.sort((a,b) => {
                         return new Date(a.dateTime) - new Date(b.dateTime);
                     });
@@ -62,16 +55,38 @@ router.get('/', function(req, res, next) {
                     });
                 }
             }
+            else if (sortBy.startsWith('l')){
+                if (sortBy.endsWith('cl')){
+                    sightings_json.sort((a,b) => {
+                        return findRadius(a, currentLocation) - findRadius(b, currentLocation);
+                    });
+                }
+                else{
+                    sightings_json.sort((a,b) => {
+                        return findRadius(b, currentLocation) - findRadius(a, currentLocation);
+                    });
+                }
+            }
         }
         console.log(sightings_json.length);
         res.render('index', { title: 'Planttrest: Plant Sighting Form',stylesheets: stylesheets, javascripts: js, sightings: sightings_json });
     });
 });
-
+function findRadius(sighting, currentLocation){
+    console.log('k')
+    coords = currentLocation.split(',');
+    lat = parseInt(coords[0]);
+    long = parseInt(coords[1]);
+    let sighting_lat = parseInt(sighting.lat);
+    let sighting_long = parseInt(sighting.long)
+    return Math.sqrt(
+        Math.pow(Math.abs(sighting_lat - lat), 2)+Math.pow(Math.abs(sighting_long - long), 2)
+    )
+}
 router.get('/sight', function(req, res, next) {
     js = javascript;
-    js.push("javascripts/locationManager.js");
-    js.push("javascripts/createSighting.js");
+    js.push("/javascripts/locationManager.js");
+    js.push("/javascripts/createSighting.js");
     res.render('sighting', { title: 'Planttrest: Plant Sighting Form',stylesheets: stylesheets, javascripts: js});
 });
 
