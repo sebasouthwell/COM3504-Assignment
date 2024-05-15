@@ -7,10 +7,15 @@ let objStores = {
     sightings: {
         autoIncrement: true,
         unique: false
+    },
+    messages: {
+        autoIncrement: true,
+        unique: false
     }
 };
 let user_data = "user_data";
 let sightings = "sightings";
+let messages = "messages";
 class indexDBHandler{
     constructor(dbName,objStores,debug=false){
         this.indexedDB = indexedDB;

@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var sighting = require('../controllers/sightings');
+var message = require('../controllers/message');
 var multer = require('multer');
 
 var storage = multer.diskStorage({
@@ -109,6 +110,17 @@ router.get('/user_sightings/:nickname', function (req, res, next) {
     });
 })
 
+router.get('/sight_messages/:sighting_id', function (req,res){
+    let sightingID = req.params['sighting_id'];
+    message.getAllBySighting(sightingID).then(messages => {
+        console.log(messages);
+        return res.status(200).send(messages);
+    }).catch(err => {
+        console.log(err);
+        res.status(500).send(err);
+    });
+});
+
 router.post('/sight', upload.single('photoUpload'), function (req, res) {
     let sightingData = req.body;
     let filePath = "";
@@ -171,13 +183,12 @@ router.get('/sight_view/:id', function (req, res, next) {
             });
         }
     });
-
 });
 
 // For pages that have not been uploaded to the mongoDB yet
 router.get('/sight_view', (req, res) => {
     let js = javascript.slice();
-    js.push('javascripts/localSightView.js');
+    js.push('/javascripts/localSightView.js');
 
     let css = stylesheets
     template = {
@@ -198,7 +209,6 @@ router.get('/sight_view', (req, res) => {
     }
     res.render('viewPlant', { title: 'Plantrest: Plant Sighting Form', stylesheets: css, javascripts: js, sighting: template})
 });
-
 
 router.get('/login', function (req, res, next) {
     js = javascript.slice();

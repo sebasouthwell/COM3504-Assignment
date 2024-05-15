@@ -1,8 +1,29 @@
 let name = null;
 let current_sighting = null;
 let otherRooms = [];
+let onlinePage = false;
 let socket = io();
-
+let onlineStatus = false;
+function isOnline() {
+    fetch(location.origin +'/cache_links').then((response) =>{
+        console.log(response);
+        if (response.status === 200){
+            onlineStatus = true;
+            console.log("In Online Mode");
+        }
+        else {
+            onlineStatus = false;
+            console.log("In Offline Mode");
+        }
+        return onlineStatus;
+    }).catch(
+        e => {
+            onlineStatus = false;
+            console.log("In Offline Mode");
+            return onlineStatus;
+        }
+    )
+}
 function genRandomName(wordCount,maxNum){
     var word_list = "https://raw.githubusercontent.com/felixfischer/categorized-words/master/2of12id.json"
     fetch(word_list).then((response) =>{
@@ -27,7 +48,7 @@ function genRandomName(wordCount,maxNum){
 }
 
 function loadNameAndSockets() {
-    // Handler for DB
+    isOnline();
     console.log('Loaded')
     handler.request(user_data, 'name',
         (results) => {
@@ -78,16 +99,21 @@ function changeName(new_name){
     handler.update(user_data, 'name',new_name,() => {
         $('#nickname')[0].innerHTML = new_name;});
 }
-window.addEventListener('load', loadNameAndSockets);
+window.addEventListener('load', () =>{
+    isOnline();
+    loadNameAndSockets();
+});
 
 function connectToPageRoom() {
-    if (location.pathname.includes('/sight_view/')){
+    onlinePage = location.pathname.includes('/sight_view/');
+    if (onlinePage){
         current_sighting = location.pathname.split('/sight_view/')[1];
     }else{
         let url = new URL(location.href);
         current_sighting = url.searchParams.get("id");
     }
     connectToRoom(current_sighting);
+    getPreviousChat();
 }
 
 function connectToRoom(roomNo) {
@@ -95,17 +121,18 @@ function connectToRoom(roomNo) {
 }
 
 function configureListeners() {
-    // We are on a sighting page
+    // We are on a sighting page#
+    console.log("Configuring listeners");
     socket.on('comment', function(room,userid,comment){
-      if (userid !== name){
-          if (room === current_sighting) {
-            // If it's from this page, we display directly on the page
-          }
-          else if (otherRooms.includes(room)){
-            // If it's from a different page, we notify the user
-              makeNotification('New Comment on Your Sighting', {body: `${userid}: ${comment}`});
-          }
-      }
+        if (userid !== name){
+            if (room === current_sighting){
+                writeOnHistory(userid, comment, new Date());
+            }
+            else if (otherRooms.includes(room)){
+                // If it's from a different page, we notify the user
+                makeNotification('New Comment on Your Sighting', {body: `${userid}: ${comment}`});
+            }
+        }
     })
     socket.on('suggestion', function (room,userid,suggest){
         if (userid !== name){
@@ -119,34 +146,31 @@ function configureListeners() {
     });
 }
 
-function init() {
-    // it sets up the interface so that userId and room are selected
-    document.getElementById('initial_form').style.display = 'block';
-    document.getElementById('chat_interface').style.display = 'none';
-
-    // called when someone joins the room. If it is someone else it notifies the joining of the room
-    socket.on('joined', function (room, userId) {
-        if (userId === name) {
-            // it enters the chat
-            console.log("help")
-        } else {
-            // notifies that someone has joined the room
-            writeOnHistory('<b>'+userId+'</b>' + ' joined room ' + room);
+function getPreviousChat(){
+    fetch('/sight_messages/' + current_sighting ).then(
+        (response) => {
+            response.json().then((response) => {
+                for (let i = 0; i < response.length; i++){
+                    writeOnHistory(response[i]['userNickName'],response[i]['message'],new Date(response[i]['dateTimestamp']));
+                }
+            })
         }
-    });
-    // called when a message is received
-    socket.on('comment', function (room, userId, chatText) {
-        let who = userId
-        if (userId === name) who = 'Me';
-        writeOnHistory('<b>' + who + ':</b> ' + chatText);
-    });
-    socket.on('suggestion', function (room, userId, chatText) {
-        let who = userId
-        if (userId === name) who = 'Me';
-        writeOnHistory('<b>' + who + ':</b> ' + chatText);
-    });
-
+    ).catch((error) => {
+        onlineStatus = false;
+        writeOnHistory('Error', 'Cannot receive previous messages from server, these are available once you return online.',new Date());
+        // Get index db history
+        handler.request(messages,current_sighting,(response) => {
+            console.log("Messages ready for upload")
+            console.log(response)
+            if (response !== undefined){
+                for (let i = 0; i < response.length; i++){
+                    writeOnHistory(response[i]['userNickName'],response[i]['message'],new Date(response[i]['dateTimestamp']));
+                }
+            }
+        });
+    })
 }
+
 
 /**
  * called when the Send button is pressed. It gets the text to send from the interface
@@ -154,14 +178,37 @@ function init() {
  */
 function sendChatText() {
     let chatText = document.getElementById('chat_input').value;
-    socket.emit('comment', current_sighting, name, chatText);
+    if (onlinePage){
+        socket.emit('suggestion', current_sighting, name, chatText);
+    }
+    if (!onlineStatus){
+        handler.request(messages,current_sighting, (response) => {
+            if (response === undefined){
+                response = [];
+            }
+            response.push({
+                room: current_sighting,
+                userNickName: name,
+                message: chatText,
+                dateTimestamp: Date.now(),
+                onlinePage: onlinePage
+            });
+            console.log('Offline saving message');
+            handler.update(messages,current_sighting, response, (response) => {
+
+            });
+        });
+    }
+    writeOnHistory(name, chatText, new Date());
 }
 
 /**
  * it appends the given html text to the history div
  * @param text: teh text to append
  */
-function writeOnHistory(text) {
+function writeOnHistory(user,message, time) {
+    console.log(time);
+    let text = `<br>${user}: ${message} - ${time.toDateString()}`
     let history = document.getElementById('history');
     let paragraph = document.createElement('p');
     paragraph.innerHTML = text;

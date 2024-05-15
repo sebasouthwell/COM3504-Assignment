@@ -16,6 +16,7 @@ const DEFAULT_CACHING_FILES  = [
     '/javascripts/main.js',
     '/javascripts/name_and_sockets.js',
     '/javascripts/locationManager.js',
+    '/javascripts/localSightView.js',
     '/javascripts/indexDBHandler.js',
     '/javascripts/createSighting.js',
     '/javascripts/mainModule.js',
@@ -23,6 +24,7 @@ const DEFAULT_CACHING_FILES  = [
     '/javascripts/sighting.js',
     "/javascripts/login.js",
     '/sight',
+    '/sight_view',
     '/',
     '/manifest.json',
     '/javascripts/idb-utility.js',
@@ -32,7 +34,6 @@ const DEFAULT_CACHING_FILES  = [
     '/static/images/Seeds.png',
     '/static/images/favicon.ico',
     '/static/images/image_icon.png',
-    '/sight_view',
     'https://cdn.socket.io/4.5.4/socket.io.min.js'
 ];
 
@@ -57,7 +58,6 @@ self.addEventListener('install', (event) => {
             })
         }).catch(() =>{
             console.log("Failed to cache");
-            return cache_obj.addAll(DEFAULT_CACHING_FILES);
         })
     );
 });
@@ -80,16 +80,23 @@ self.addEventListener( 'activate', (event) => {
 self.addEventListener('fetch', (event) => {
     console.log('[Service Worker] : Fetching]');
     const request = event.request;
-    console.log("Url", request.url);
+    let url = request;
+    if (request.url.includes('sight_view?id')) {
+        const parsedURL = new URL(request.url);
+        url = parsedURL.origin + '/sight_view';
+
+    }
+    console.log("Url", url);
+    console.log('[Service Worker] : Fetching]');
     event.respondWith(
-        caches.match(request).then(function(response){
-            return response || fetch(request);
+        caches.match(url).then(function(response){
+            return response || fetch(request.url);
         }).catch((error) => {
             console.log('Could not find in cache');
         })
     );
 });
-
+/*
 self.addEventListener('sync', event => {
     console.log('Service Worker: Syncing Started');
     if (event.tag === 'sync-sighting') {
@@ -127,3 +134,4 @@ self.addEventListener('sync', event => {
         });
     }
 });
+*/

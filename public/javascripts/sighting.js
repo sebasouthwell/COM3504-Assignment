@@ -24,7 +24,6 @@ const insertSightingInList = (sighting) => {
 
     }
 }
-
 // Register service worker to control making site work offline
 window.onload = function () {
     if ('serviceWorker' in navigator) {
@@ -38,6 +37,7 @@ window.onload = function () {
             });
     }
 }
+
 
 function setupNotifications() {
     // Check if the browser supports the Notification API

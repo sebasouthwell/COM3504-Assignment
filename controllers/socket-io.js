@@ -1,3 +1,4 @@
+var message = require('../controllers/message');
 exports.init = function(io) {
     io.sockets.on('connection', function (socket) {
         try {
@@ -8,8 +9,20 @@ exports.init = function(io) {
             });
 
             socket.on('comment', function (room, userId, comment) {
-                console.log({room: room, userId: userId, comment: comment});
                 io.sockets.to(room).emit('comment', room, userId, comment);
+                message.create({
+                    sighting: room,
+                    userNickName: userId,
+                    message: comment,
+                    dateTimestamp: new Date()
+                }).then(() => {
+                    console.log({room: room, userId: userId, comment: comment});
+                    }
+                ).catch(
+                    err => {
+                        console.log(err);
+                    }
+                )
             });
 
             socket.on('suggestion', function (room, userId, chatText) {

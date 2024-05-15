@@ -1,3 +1,4 @@
+let localSighting = null;
 window.addEventListener('load', () => {
     const urlParams = new URLSearchParams(window.location.search);
     const id = urlParams.get('id');

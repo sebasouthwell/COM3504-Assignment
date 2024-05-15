@@ -68,19 +68,22 @@
                 </div>
                 <div class="row p-3">
                     <div class="col-1"></div>
-                    <div class="col-10 bg-secondary-subtle">
+                    <div class="col-10 bg-secondary-subtle rounded text-center">
                     <h2>Comments</h2>
                         <div id="chat_interface" >
                             <div>
                                 <div id="in_room" style="display: inline"></div>
                             </div>
-                            <div id="history" class="boxed"></div>
-                            <div id="input" class="bottom boxed">
+                            <div class="boxed">
+                                <div id="history" class="bg-white border-2 border-secondary">
+                                </div>
+                            </div>
+                            <div id="input" class="bottom boxed rounded">
                                 <form onsubmit="return false;" style="width: 100%">
                                     <p>
                                         <input type="text" id="chat_input" name="chat_input" style="width: 80%">
                                         <input type="text" id="plantId" value="<%= sighting.id %>" hidden>
-                                        <button id="chat_send" onclick="sendChatText()">Send</button>
+                                        <button class="btn btn-primary" id="chat_send" onclick="sendChatText()">Send</button>
                                     </p>
                                 </form>
                             </div>

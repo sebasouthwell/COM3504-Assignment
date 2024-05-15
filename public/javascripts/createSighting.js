@@ -1,4 +1,5 @@
 window.addEventListener('load', function () {
+    isOnline();
     let date = (new Date()).toISOString();
     date = date.split('T')[0] + " " + date.split('T')[1].split('.')[0];
     $('#dateTime').val(date.substring(0,date.length-3));
@@ -17,7 +18,7 @@ window.addEventListener('load', function () {
     var form = document.getElementById('sightingForm');
     form.addEventListener('submit', function (event) {
         // Check if online or offline
-        if (!navigator.onLine){
+        if (onlineStatus){
             event.preventDefault();
             alert("You are offline, please connect to the internet to submit a sighting");
             var imageString = null;
@@ -43,7 +44,7 @@ window.addEventListener('load', function () {
             let guid = generateQuickGuid()
             setTimeout(() => {
                 let sighting = {
-                    _id: guid, userNickName: $("#userNickName").val(),givenName: $("#givenName").val(),description:$('#description').val(),lat: $('#lat').val(),long: $('#long').val(), plantEstHeight: $('#plantEstHeight').val(), plantEstSpread: $('#plantEstSpread').val(), hasFlowers: $('#hasFlowers').is(':checked'), flowerColour: $('#flowerColour').val(), hasFruit: $('#hasFruit').is(':checked'), hasSeeds: $('#hasSeeds').is(':checked'), sunExposureLevel: $('#sunExposureLevel').val(), dateTime: $('#dateTime').val(), identificationStatus: $('#identificationStatus').val(), photo: imageString
+                    _id: guid, userNickName: $("#userNickName").val(),givenName: $("#givenName").val(),description:$('#description').val(),lat: $('#lat').val(),long: $('#long').val(), plantEstHeight: $('#plantEstHeight').val(), plantEstSpread: $('#plantEstSpread').val(), hasFlowers: $('#hasFlowers').is(':checked'), flowerColour: $('#flowerColour').val(), hasFruit: $('#hasFruit').is(':checked'), hasSeeds: $('#hasSeeds').is(':checked'), sunExposureLevel: $('#sunExposureLevel').val(), dateTime: $('#dateTime').val(), identificationStatus: $('#identificationStatus').val(), photo: imageString, chat: []
                 }
                 if (checkValidity(sighting)){
                     handler.update(sightings,guid,sighting,() => {
@@ -52,7 +53,7 @@ window.addEventListener('load', function () {
                     window.location.href = window.origin + '/sight_view?id=' + guid;
                 }
                 console.log(sighting);
-            },100)
+            },100);
         }
         else{
 
