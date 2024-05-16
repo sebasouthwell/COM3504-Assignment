@@ -1,7 +1,4 @@
-body {
-  padding: 50px;
-  /*background-color: rgb(230,224,199);*/
-}
+
 div{
   /*background-color: #45802E;*/
 }
@@ -14,10 +11,6 @@ a {
   justify-content: space-around;
 }
 
-.logo{
-  width: 100px;
-  height: 100px;
-}
 
 .hidden {
   display: none; !important;
@@ -78,6 +71,10 @@ html body {
     from {opacity: 1;}
     to {opacity: 0;}
 }
+.logo{
+  width: 100px;
+  height: 100px;
+}
 
 .star{
   color: red;
@@ -94,9 +91,109 @@ html body {
   background-color: linen;
 }
 
-.image-card{
-  display: flex !important;
-  flex-wrap: wrap;
-  flex-direction: row;
-  align-items: center;
+
+@media(min-width: 995px) {
+  #navbarNavDropdownMobile{
+    display: none !important;
+  }
+  .image-card{
+    display: flex !important;
+    flex-wrap: wrap;
+    flex-direction: row;
+    align-items: center;
+  }
+  body {
+    padding: 50px;
+    /*background-color: rgb(230,224,199);*/
+  }
+  #plantPhotoPhone{
+    display: none;!important;
+  }
+}
+@media (max-width: 994px) {
+  #navbarNavDropdown{
+    display: none !important;
+  }
+  #navbarNavDropdownMobile{
+    display: inline-flex !important;
+    align-content: end;
+  }
+  #navbarNavDropdownMobile.navbar-collapse{
+    flex-basis: 0%;
+
+  }
+  .image-card{
+    display: flex !important;
+    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: center;
+    width: fit-content;
+  }
+  body {
+    padding: 10px;
+    /*background-color: rgb(230,224,199);*/
+  }
+  .w-24{
+    width: 80% !important;
+  }
+  .thumbnail-sm{
+    width: 30px;
+    height:30px;
+  }
+  .thumbnail{
+    width: 30px;
+    height: 30px;
+  }
+  .d-flex.container.row.px-0.image-card{
+    padding-top: 40px;
+  }
+
+  #navbarSupportedContent.navbar-collapse {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+  }
+  .dropdown {
+    margin-right: 1rem;
+    padding-bottom: 10px;
+  }
+  #navbarSupportedContent.form-control {
+    width: 100%;
+    max-width: 200px;
+  }
+  .btn {
+    margin-top: 10px;
+  }
+  body{
+    margin-bottom: 20px;
+  }
+  #reverseRow {
+    flex-basis: 100%;
+    max-width: 100%;
+    display: flex;
+  }
+
+  #reverseRow .row {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .col.pt-4.ps-lg-4{
+    text-align: center;
+  }
+  .d-flex.row.flex-row{
+    display: flex;
+    justify-content: center;
+  }
+  #plantPhotoPhone{
+    display: inline-flex;!important;
+    width: fit-content;
+  }
+  #plantPhotoPhone.bg-secondary-subtle{
+    width: 90%;
+  }
+  #plantPhoto{
+    display: none;
+  }
 }
