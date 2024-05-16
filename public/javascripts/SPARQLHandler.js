@@ -35,8 +35,8 @@ function DBpediaSearch(resource) {
             BIND(dbr:${resource} AS ?uri)
             ?uri rdfs:label ?label .
             ?uri dbo:abstract ?abstract .
-        FILTER (langMatches(lang(?label), "en")) .
-        FILTER (langMatches(lang(?abstract ), "en")) .
+            FILTER (langMatches(lang(?label), "en")) .
+            FILTER (langMatches(lang(?abstract ), "en")) .
         }`;
 
         // Encode the query as a URL parameter
@@ -68,7 +68,7 @@ function DBpediaSearch(resource) {
 
 }
 
-function ListPlants() {
+async function listPlants() {
     return new Promise((resolve, reject) => {
 
         // The DBpedia SPARQL endpoint URL
@@ -79,9 +79,13 @@ function ListPlants() {
         PREFIX dbo: <http://dbpedia.org/ontology/>
         PREFIX dbr: <http://dbpedia.org/resource/>
 
-        SELECT DISTINCT ?plant
+        SELECT DISTINCT ?plant ?label ?abstract
         WHERE {
             ?plant a dbo:Plant .
+            ?plant rdfs:label ?label .
+            ?plant dbo:abstract ?abstract .
+            FILTER (langMatches(lang(?label), "en")) .
+            FILTER (langMatches(lang(?abstract ), "en")) .
         }`;
 
         // Encode the query as a URL parameter
@@ -102,7 +106,7 @@ function ListPlants() {
                 // The results are in the 'data' object
                 let bindings = data.results.bindings;
                 let result = JSON.stringify(bindings);
-                console.log(result);
+                //console.log(result);
                 resolve(result);
             })
             .catch(err => {
@@ -114,11 +118,52 @@ function ListPlants() {
 
 }
 
-// document.addEventListener('DOMContentLoaded', function () {
-//     const searchInput = document.getElementById('DBpediaName');
-//     const dropdown = document.getElementById('DBpediaDropdownList');
-//
-//     ListPlants().then(plants => {
-//
-//     })
-// })
+document.addEventListener('DOMContentLoaded', async () => {
+    const plantSearchInput = document.getElementById('DBpediaName');
+    const plantDropdown = document.getElementById('DBpediaDropdownList');
+    const plantGivenName = document.getElementById('givenName');
+    const plantDescription = document.getElementById('description');
+    const plantURL = document.getElementById('DBpediaURL');
+
+    let plants = [];
+    try {
+        plants = JSON.parse(await listPlants());
+        //console.log(plants);
+    } catch (error) {
+        console.error('Error fetching plant data: ', error);
+    }
+
+    plantSearchInput.addEventListener('input', function() {
+        if (navigator.onLine) {
+            const filter = plantSearchInput.value.toUpperCase();
+            plantDropdown.innerHTML = '';
+            if (!filter) return;
+
+            const filteredPlants = plants.filter(plant => plant.label.value.toUpperCase().includes(filter));
+            filteredPlants.forEach(plant => {
+                const item = document.createElement('div');
+                item.textContent = plant.label.value;
+                item.addEventListener('click', function() {
+                    plantSearchInput.value = plant.label.value;
+                    plantGivenName.value = plant.label.value;
+                    plantDescription.value = plant.abstract.value;
+                    plantURL.textContent = plant.plant.value;
+                    plantURL.href = plant.plant.value;
+                    plantDropdown.innerHTML = '';
+                });
+                plantDropdown.appendChild(item);
+            });
+        } else {
+            alert("DBpedia search unavailable whilst offline");
+            plantSearchInput.innerHTML = '';
+        }
+
+
+    });
+
+    document.addEventListener('click', function (event) {
+        if (event.target !== plantSearchInput) {
+            plantDropdown.innerHTML = '';
+        }
+    })
+});
