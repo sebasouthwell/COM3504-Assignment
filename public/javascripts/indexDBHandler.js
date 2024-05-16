@@ -21,6 +21,7 @@ class indexDBHandler{
         this.indexedDB = indexedDB;
         this.currentDB = this.indexedDB.open(dbName);
         this.warning = document.getElementById('client_warn');
+        this.ready = true;
         this.currentDB.addEventListener("error", function(error) {
             this.warning.innerHTML = '<h1>Warning: Offline Mode is not available</h1>';
             if (debug){
@@ -36,6 +37,7 @@ class indexDBHandler{
 
         this.currentDB.addEventListener("upgradeneeded", function(ev) {
             const db = ev.target.result;
+            this.ready = false;
             for (const [key, value] of Object.entries(objStores)){
                 // Had to change the check for dict as no type of that name in JS
                  if (!db.objectStoreNames.contains(key) && value.constructor === Object){
@@ -44,6 +46,7 @@ class indexDBHandler{
                      console.log("ObjectStore format error");
                  }
             }
+            this.ready = true;
         });
     }
 

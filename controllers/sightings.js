@@ -1,7 +1,7 @@
 const sightingModel = require('../models/sighting');
 
 
-exports.create = function(sightingData, filePath){
+exports.create = function(sightingData, filePath) {
     let sighting = new sightingModel({
         plantName: sightingData.plantName,
         hasFruit: sightingData.hasFruit,
@@ -20,13 +20,21 @@ exports.create = function(sightingData, filePath){
         description: sightingData.description,
         dateTime: sightingData.dateTime,
         DBPediaURL: sightingData.DBPediaURL,
+        idempotency_token: sightingData._id
     });
 
-    return sighting.save().then(sighting => {
-        return JSON.stringify(sighting);
-    }).catch(err => {
-        console.log(err);
-        return null;
+    return this.idempotency_check(sightingData._id).then((dupe) => {
+        if (!dupe) {
+            return sighting.save().then(sighting => {
+                console.log("sighting saved");
+                return JSON.stringify(sighting);
+            }).catch(err => {
+                console.log(err);
+                return null;
+            });
+        } else {
+            return null;
+        }
     });
 };
 
@@ -81,6 +89,22 @@ exports.getAllFilter = function(query_map){
     }).catch(err => {
         console.log(err);
         return null;
+    });
+}
+
+exports.idempotency_check= function(token){
+    return sightingModel.findOne({idempotency_token: token}).then(sightings => {
+        console.log(typeof(sightings));
+        if (sightings === undefined || sightings === null){
+            console.log("No duplicate")
+            return false;
+        }
+        else{
+            return sightings._id;
+        }
+    }).catch(err => {
+        console.log(err);
+        return false;
     });
 }
 

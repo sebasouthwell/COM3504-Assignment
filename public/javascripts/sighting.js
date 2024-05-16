@@ -1,29 +1,4 @@
-const insertSightingInList = (sighting) => {
-    if (sighting.text) {
-        const copy = document.getElementById("sighting_template").cloneNode()
-        copy.removeAttribute("id") // otherwise this will be hidden as well
-        copy.innerText = sighting.text
-        copy.setAttribute("data-sighting-id", sighting.id)
 
-        // Insert sorted on string text order - ignoring case
-        const sightinglist = document.getElementById("sighting_list")
-        const children = sightinglist.querySelectorAll("li[data-sighting-id]")
-        let inserted = false
-        for (let i = 0; (i < children.length) && !inserted; i++) {
-            const child = children[i]
-            const copy_text = copy.innerText.toUpperCase()
-            const child_text = child.innerText.toUpperCase()
-            if (copy_text < child_text) {
-                sightinglist.insertBefore(copy, child)
-                inserted = true
-            }
-        }
-        if (!inserted) { // Append child
-            sightinglist.appendChild(copy)
-        }
-
-    }
-}
 // Register service worker to control making site work offline
 window.onload = function () {
     if ('serviceWorker' in navigator) {
@@ -35,6 +10,57 @@ window.onload = function () {
             .catch(function (err) {
                 console.log('Service Worker registration failed: ', err);
             });
+    }
+}
+
+async function base64toBlob(b64){
+    try{
+        let res = await fetch(b64);
+        let blob = await res.blob();
+        return blob;
+    }
+    catch(err){
+        console.log(err);
+        return null;
+    }
+}
+
+async function getSightingForm(sighting,chats = [], imageString){
+    let formData = new FormData();
+    if (chats.length > 0){
+        // Convert to String json
+        let chats_json = JSON.stringify(chats);
+        formData.append('chats', chats_json);
+        delete sighting.chats;
+    }
+    let sighting_keys = sighting.key
+    for (const key in sighting){
+        formData.append(key, sighting[key])
+    }
+    if (imageString){
+        let photoBlob = await base64toBlob(imageString);
+        if (photoBlob){
+            formData.append('photo', photoBlob, "image.png");
+        }
+    }
+    return formData;
+}
+
+async function uploadSighting(sighting,chats,imageString){
+    try {
+        let formData = await getSightingForm(sighting,chats,imageString);
+        let res = await
+            fetch('/upload/sighting', {
+            method: 'POST',
+            body: formData
+        }).then((response) => {
+            return response.json();
+        });
+        return res['id'];
+    }
+    catch (err){
+        console.log(err);
+        return null;
     }
 }
 

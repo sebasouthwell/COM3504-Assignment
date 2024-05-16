@@ -1,7 +1,6 @@
-importScripts('/javascripts/idb-utility.js');
-
 const CACHE_NAME = 'Plantrest - v1'
 const DEFAULT_CACHING_FILES  = [
+    'https://hips.hearstapps.com/hmg-prod/images/high-angle-view-of-variety-of-succulent-plants-royalty-free-image-1584462052.jpg',
     "/jquery/dist/jquery.js",
     '/bootstrap/dist/css/bootstrap.min.css',
     '/stylesheets/style.css',
@@ -25,6 +24,7 @@ const DEFAULT_CACHING_FILES  = [
     "/javascripts/login.js",
     '/sight',
     '/sight_view',
+    '/login',
     '/',
     '/manifest.json',
     '/javascripts/idb-utility.js',
@@ -37,12 +37,18 @@ const DEFAULT_CACHING_FILES  = [
     'https://cdn.socket.io/4.5.4/socket.io.min.js'
 ];
 
+let swDebug= false;
+function debugLog(message) {
+    if (swDebug) {
+        console.log(message);
+    }
+}
 console.log('Service Worker Called...');
 self.addEventListener('install', (event) => {
-    console.log('[Service Worker] : Installed');
+    debugLog('[Service Worker] : Installed');
     event.waitUntil(
         caches.open(CACHE_NAME).then(function (cache_obj) {
-            console.log('[ServiceWorker] Caching app shell');
+            debugLog('[ServiceWorker] Caching app shell');
             fetch("http://localhost:3000/cache_links", {
                 method: 'get'
             }).then(r => {
@@ -57,13 +63,13 @@ self.addEventListener('install', (event) => {
                 cache_obj.addAll(DEFAULT_CACHING_FILES);
             })
         }).catch(() =>{
-            console.log("Failed to cache");
+            debugLog("Failed to cache");
         })
     );
 });
 
 self.addEventListener( 'activate', (event) => {
-    console.log("[Service Worker] : Activated ");
+    debugLog("[Service Worker] : Activated ");
     event.waitUntil(
         (async() => {
             const keys = await caches.keys();
@@ -75,32 +81,85 @@ self.addEventListener( 'activate', (event) => {
             })
         })
     )
+    return self.clients.claim();
 });
 
 self.addEventListener('fetch', (event) => {
-    console.log('[Service Worker] : Fetching]');
+    debugLog('[Service Worker] : Fetching]');
     const request = event.request;
     let url = request;
     if (request.url.includes('sight_view?id')) {
         const parsedURL = new URL(request.url);
         url = parsedURL.origin + '/sight_view';
-
     }
-    console.log("Url", url);
-    console.log('[Service Worker] : Fetching]');
-    event.respondWith(
-        caches.match(url).then(function(response){
-            return response || fetch(request.url);
+    if (request.method !== 'GET' || request.url.includes('cache_links') || request.url.includes('user_sightings') || request.url.includes('sight_messages') || request.url.includes('upload')){
+        if (!request.url.includes('socket.io')){
+            console.log(request);
+        }
+        return fetch(event.request).then((response) => {
+            console.log(`Success : ${response}`);
+            return response;
         }).catch((error) => {
-            console.log('Could not find in cache');
+            console.log(`Failed : ${error}`);
+            return error;
         })
-    );
+    }
+    else{
+        event.respondWith(
+            caches.match(url).then(function (response) {
+                return response
+                    || fetch(url)
+                        .then(function (response) {
+                            if (response.ok) {
+                                return response;
+                            }
+                        })
+                        .catch(function (err) {
+                            debugLog("error: " + err);
+                        })
+            })
+        );
+    }
 });
 /*
 self.addEventListener('sync', event => {
     console.log('Service Worker: Syncing Started');
     if (event.tag === 'sync-sighting') {
         console.log('Service Worker: Syncing new Sightings');
+        openSyncSightingsIDB().then((syncPostDB) => {
+            getAllSyncSightings(syncPostDB).then((syncSightings) => {
+                for (const syncSighting of syncSightings) {
+                    console.log('Service Worker: Syncing new Sighting: ', syncSighting);
+                    console.log(syncSighting.text)
+                    // Create a FormData object
+                    const formData = new URLSearchParams();
+
+                    // Iterate over the properties of the JSON object and append them to FormData
+                    formData.append("text", syncSighting.text);
+
+                    // Fetch with FormData instead of JSON
+                    fetch('http://localhost:3000/c', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                    }).then(() => {
+                        console.log('Service Worker: Syncing new Sighting: ', syncSighting, ' done');
+                        deleteSyncSightingFromIDB(syncPostDB,syncSighting.id);
+                        // Send a notification
+                        self.registration.showNotification('Sighting Synced', {
+                            body: 'Sighting synced successfully!',
+                        });
+                    }).catch((err) => {
+                        console.error('Service Worker: Syncing new Sighting: ', syncSighting, ' failed');
+                    });
+                }
+            });
+        });
+    }
+    if (event.tag === 'sync-message') {
+        console.log('Service Worker: Syncing new Message');
         openSyncSightingsIDB().then((syncPostDB) => {
             getAllSyncSightings(syncPostDB).then((syncSightings) => {
                 for (const syncSighting of syncSightings) {

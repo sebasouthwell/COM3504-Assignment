@@ -19,7 +19,7 @@ var storage = multer.diskStorage({
 let upload = multer({storage});
 
 let stylesheets = ["/bootstrap/dist/css/bootstrap.min.css", "/stylesheets/style.css", "/bootstrap-icons/font/bootstrap-icons.css", "/bootstrap-datetime-picker/css/bootstrap-datetimepicker.css", "http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css"];
-let javascript = [ "https://cdn.socket.io/4.5.4/socket.io.min.js", "/jquery/dist/jquery.js", "/bootstrap/dist/js/bootstrap.js", "/bootstrap/dist/js/bootstrap.bundle.js", "/bootstrap-datetime-picker/js/bootstrap-datetimepicker.js", "/javascripts/indexDBHandler.js", "/javascripts/name_and_sockets.js","/javascripts/sighting.js","http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"];
+let javascript = ["https://cdn.socket.io/4.5.4/socket.io.min.js", "/jquery/dist/jquery.js", "/bootstrap/dist/js/bootstrap.js", "/bootstrap/dist/js/bootstrap.bundle.js", "/bootstrap-datetime-picker/js/bootstrap-datetimepicker.js", "/javascripts/indexDBHandler.js", "/javascripts/name_and_sockets.js", "/javascripts/sighting.js", "http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"];
 
 router.get('/', function (req, res, next) {
     js = javascript.slice();
@@ -74,6 +74,7 @@ router.get('/sight', function (req, res, next) {
     js = javascript.slice();
     js.push("/javascripts/locationManager.js");
     js.push("/javascripts/createSighting.js");
+    js.push("/javascripts/SPARQLHandler.js")
     res.render('sighting', {title: 'Planttrest: Plant Sighting Form', stylesheets: stylesheets, javascripts: js});
 });
 
@@ -89,7 +90,7 @@ router.get('/sightings', function (req, res, next) {
 })
 
 router.get('/cache_links', function (req, res, next) {
-    let images = sighting.getAllCache().then((images) =>{
+    let images = sighting.getAllCache().then((images) => {
         if (images == null) {
             res.status(200).send([]);
         }
@@ -110,7 +111,7 @@ router.get('/user_sightings/:nickname', function (req, res, next) {
     });
 })
 
-router.get('/sight_messages/:sighting_id', function (req,res){
+router.get('/sight_messages/:sighting_id', function (req, res) {
     let sightingID = req.params['sighting_id'];
     message.getAllBySighting(sightingID).then(messages => {
         console.log(messages);
@@ -121,39 +122,61 @@ router.get('/sight_messages/:sighting_id', function (req,res){
     });
 });
 
-router.post('/sight', upload.single('photoUpload'), function (req, res) {
+router.post('/upload/sighting', upload.single('photo'), function (req, res){
     let sightingData = req.body;
-    let filePath = "";
-    if (req.file) {
-        filePath = req.file.filename;
-    }
-    if (sightingData.hasFruit === undefined) {
-        sightingData.hasFruit = false;
-    } else {
-        sightingData.hasFruit = true;
-    }
-    if (sightingData.hasSeeds === undefined) {
-        sightingData.hasSeeds = false;
-    } else {
-        sightingData.hasSeeds = true;
-    }
-    if (sightingData.hasFlowers === undefined) {
-        sightingData.hasFlowers = false;
-        delete sightingData.flowerColour;
-    } else {
-        sightingData.hasFlowers = true;
-    }
-    sightingData.dateTime = new Date(sightingData.dateTime);
-
-    let result = sighting.create(sightingData, filePath);
-    result.then((sighting) => {
-        let s = JSON.parse(sighting);
-        let id = s['_id'].toString();
-        res.redirect('../sight_view/' + id)
-    }).catch((err) => {
-        console.log(err);
-        res.render('error',{message: "Error adding sighting", error: err})
-    });
+    console.log()
+    sighting.idempotency_check(sightingData._id).then((taken) => {
+        console.log(taken)
+        if (!taken){
+            let filePath = "";
+            if (req.file) {
+                filePath = req.file.filename;
+            }
+            console.log(`file path ${filePath}`)
+            sightingData.hasFlowers = sightingData.hasFlowers === 'true';
+            sightingData.hasSeeds = sightingData.hasSeeds === 'true';
+            sightingData.hasFruit = sightingData.hasFruit === 'true';
+            sightingData.lat = parseFloat(sightingData.lat)
+            sightingData.long = parseFloat(sightingData.long)
+            sightingData.plantEstHeight = parseFloat(sightingData.plantEstHeight)
+            sightingData.plantEstSpread = parseFloat(sightingData.plantEstSpread)
+            sightingData.sunExposureLevel = parseInt(sightingData.sunExposureLevel)
+            sightingData.dateTime = new Date(sightingData.dateTime);
+            let result = sighting.create(sightingData, filePath).then(
+                (sight) =>{
+                    if (sight !== null){
+                        let s = JSON.parse(sight);
+                        let id = s['_id'].toString();
+                        console.log(id);
+                        let chats = sightingData.chats;
+                        console.log(JSON.stringify(chats));
+                        for (let i = 0; i < chats.length; i++){
+                            let message_info = chats[i];
+                            console.log(JSON.stringify(message_info));
+                            message.create({
+                                sighting: id,
+                                userNickName: message_info['userNickName'],
+                                message: message_info['userNickName'],
+                                dateTimestamp: message_info['dateTimestamp']
+                            });
+                        }
+                        console.log("Chat :" + chats);
+                        res.status(200).send({id: id});
+                    }
+                    else{
+                        sighting.idempotency_check(sightingData._id).then(
+                            (match) => {
+                                res.status(200).send({id: match});
+                            }
+                        )
+                    }
+                }
+            );
+        }
+        else{
+            res.status(409).send({id: taken});
+        }
+    })
 });
 
 router.get('/sight_view/:id', function (req, res, next) {
@@ -171,8 +194,7 @@ router.get('/sight_view/:id', function (req, res, next) {
             // and convert them to a number
             if (jsSighting.photo != null && jsSighting.photo.length != 0) {
                 jsSighting.photo = "/images/uploads/" + jsSighting.photo;
-            }
-            else{
+            } else {
                 jsSighting.photo = 'https://hips.hearstapps.com/hmg-prod/images/high-angle-view-of-variety-of-succulent-plants-royalty-free-image-1584462052.jpg';
             }
             res.render('viewPlant', {
@@ -183,6 +205,37 @@ router.get('/sight_view/:id', function (req, res, next) {
             });
         }
     });
+});
+
+router.get('/sighting_data/:id', function (req, res) {
+    let id = req.params['id'];
+    sighting.getByID(id).then(sightingByID => {
+        console.log(sightingByID);
+        return res.status(200).send(sightingByID);
+    }).catch(err => {
+        console.log(err);
+        res.status(500).send(err);
+    });
+});
+
+router.post('/sighting_upload', function (req, res) {
+    let body = req.body;
+    try{
+        console.log(body);
+        let chat = body['chat'];
+        if (!body['hasFlowers']){
+            delete body['flowerColour'];
+        }
+        if (body['photo']){
+
+        }
+        res.status(200).send(chat);
+    }
+    catch(err){
+        console.log(err);
+        res.status(500).send(err);
+    }
+    res.status(200).send([])
 });
 
 // For pages that have not been uploaded to the mongoDB yet
@@ -207,9 +260,13 @@ router.get('/sight_view', (req, res) => {
         plantEstSpread: 11.899908819991197253,
         photo: 'photo-Template'
     }
-    res.render('viewPlant', { title: 'Plantrest: Plant Sighting Form', stylesheets: css, javascripts: js, sighting: template})
+    res.render('viewPlant', {
+        title: 'Plantrest: Plant Sighting Form',
+        stylesheets: css,
+        javascripts: js,
+        sighting: template
+    })
 });
-
 router.get('/login', function (req, res, next) {
     js = javascript.slice();
     js.push("/javascripts/login.js");

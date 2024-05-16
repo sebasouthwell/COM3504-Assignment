@@ -19,7 +19,8 @@ var SightingSchema = new Schema(
         identificationStatus: {type: String, required: true, max: 100},
         givenName: {type: String, required: false, max: 100},
         dateTime : {type: Date, required: true},
-        DBPediaURL: {type: String, required: false, max: 100}
+        DBPediaURL: {type: String, required: false, max: 100},
+        idempotency_token : {type: String, required: true, max:100, unique: true}
     }
 );
 

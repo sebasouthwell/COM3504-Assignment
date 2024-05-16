@@ -5,11 +5,14 @@
             <div class="p-2 text-center">
                 <h2 class="text-primary">Record plant sighting</h2>
             </div>
-            <form action="/sight" method="POST" enctype='multipart/form-data' id="sightingForm" name="sightingForm">
-                <div class="form-group pt-1 hidden">
-                    <label for="userNickName">Nickname<sup class="star">*</sup>: </label>
-                    <input class="form-control" type="text" id="userNickName" name="userNickName" required>
+            <form method="" enctype='multipart/form-data' id="sightingForm" name="sightingForm">
+                <% /* %>
+                <div class="form-group pt-1">
+                    <label for="DBpediaName">DBpedia resource (if known): </label>
+                    <input class="form-control" type="text" id="DBpediaName" name="DBpediaName" placeholder="Search for a plant...">
+                    <div id="DBpediaDropdownList"></div>
                 </div>
+                <% */ %>
                 <div class="form-group pt-1">
                     <label for="givenName">Plant name (if known): </label>
                     <input class="form-control" type="text" id="givenName" name="givenName">
@@ -102,12 +105,10 @@
                     </select>
                 </div>
 
-                <input class="btn btn-success mt-2 w-100" type="submit" onclick="createSighting();" value="Save">
+                <input class="btn btn-success mt-2 w-100" type="submit" value="Save">
             </form>
         </div>
     </div>
-    <script src="/javascripts/sighting.js"></script>
-    <script src="/javascripts/idb-utility.js"></script>
 </div>
 
 

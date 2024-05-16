@@ -4,7 +4,7 @@
         <div class="pb-2 bg-light rounded">
             <nav class="navbar navbar-expand-lg bg-body-tertiary">
                 <div class="container-fluid">
-                    <form class="collapse navbar-collapse pt-2" id="navbarSupportedContent">
+                    <form class="collapse navbar-collapse pt-2" id="navbarSupportedContent" action="">
                         <div class="dropdown ps-sm-2">
                             <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
                                 Features
@@ -69,9 +69,6 @@
             </nav>
             <div class="pb-2 bg-light rounded mt-1">
                 <div class="d-flex justify-content-center  p-2 text-center">
-                    <% if (sightings === null || sightings.length === 0) { %>
-                    <h3 id="notFoundSightings"> No sightings found</h3>
-                    <% } else { %>
                     <div class="d-flex container row px-0 image-card " id="sightings">
                         <% for(let i = 0; i < sightings.length; i++) { %>
                             <div class="card text-white w-24 p-0 m-1" >
@@ -105,7 +102,6 @@
                                 </a>
                             </div>
                         <% } %>
-                    <% } %>
                 </div>
             </div>
         </div>

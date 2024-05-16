@@ -24,27 +24,27 @@ function isOnline() {
         }
     )
 }
-function genRandomName(wordCount,maxNum){
-    var word_list = "https://raw.githubusercontent.com/felixfischer/categorized-words/master/2of12id.json"
-    fetch(word_list).then((response) =>{
-        response.json().then(
-            (respJSON) => {
-                let words = respJSON['N'];
-                let nickname = ""
-                for (let i = 0; i < wordCount; i++){
-                    nickname += words[Math.floor(Math.random() * words.length)]
-                }
-                nickname += Math.floor(Math.random()*maxNum).toString()
-                name = nickname;
-                console.log(name);
-            }).catch(() => {
-
+async function genRandomName(wordCount,maxNum){
+    var word_list = "https://raw.githubusercontent.com/felixfischer/categorized-words/master/2of12id.json";
+    try{
+        w_list_promise = await fetch(word_list);
+        if (w_list_promise.status=== 200){
+            js_promise = await w_list_promise.json();
+            let words = js_promise['N'];
+            let nickname = "";
+            for (let i = 0; i < wordCount; i++){
+                nickname += words[Math.floor(Math.random() * words.length)]
             }
-        )
-    }).catch(
-        () => {
+            nickname += Math.floor(Math.random()*maxNum).toString()
+            return nickname;
         }
-    )
+        else {
+            return null;
+        }
+    }
+    catch(e){
+        return null;
+    }
 }
 
 function loadNameAndSockets() {
@@ -53,12 +53,17 @@ function loadNameAndSockets() {
     handler.request(user_data, 'name',
         (results) => {
         console.log(results)
-        if (results === undefined){
-            genRandomName(2,100);
-            setTimeout(() => {
-                handler.update(user_data, 'name',name,() => {
-                    $('#nickname')[0].innerHTML = name;});
-                },100);
+        if (results === undefined || results === null) {
+            genRandomName(2,100).then(
+                (nickname) => {
+                    console.log(`Name: ${nickname}`)
+                    if (nickname !== undefined) {
+                        name = nickname;
+                        handler.update(user_data, 'name',nickname,() => {
+                            $('#nickname')[0].innerHTML = nickname;});
+                    }
+                }
+            )
         }
         else{
             name = results;
@@ -99,6 +104,7 @@ function changeName(new_name){
     handler.update(user_data, 'name',new_name,() => {
         $('#nickname')[0].innerHTML = new_name;});
 }
+
 window.addEventListener('load', () =>{
     isOnline();
     loadNameAndSockets();
@@ -124,15 +130,26 @@ function configureListeners() {
     // We are on a sighting page#
     console.log("Configuring listeners");
     socket.on('comment', function(room,userid,comment){
-        if (userid !== name){
-            if (room === current_sighting){
-                writeOnHistory(userid, comment, new Date());
+        console.log("NOTIF comment socket on");
+        fetch('/sighting_data/' + room ).then(
+            (response) => {
+                response.json().then((response) => {
+                    let sightingNick = response['userNickName'];
+                    if (sightingNick !== name){
+                        console.log("NOTIF Not same nickname");
+                        // if (room === current_sighting){
+                        //     console.log("NOTIF room === current");
+                        //     writeOnHistory(userid, comment, new Date());
+                        // }
+                        if (otherRooms.includes(room)){
+                            console.log("NOTIF Not same room");
+                            // If it's from a different page, we notify the user
+                            makeNotification('New Comment on Your Sighting', {body: `${userid}: ${comment}`});
+                        }
+                    }
+                })
             }
-            else if (otherRooms.includes(room)){
-                // If it's from a different page, we notify the user
-                makeNotification('New Comment on Your Sighting', {body: `${userid}: ${comment}`});
-            }
-        }
+        );
     })
     socket.on('suggestion', function (room,userid,suggest){
         if (userid !== name){
@@ -178,8 +195,10 @@ function getPreviousChat(){
  */
 function sendChatText() {
     let chatText = document.getElementById('chat_input').value;
+    console.log("NOTIF comment sent");
     if (onlinePage){
-        socket.emit('suggestion', current_sighting, name, chatText);
+        console.log("NOTIF comment online");
+        socket.emit('comment', current_sighting, name, chatText);
     }
     if (!onlineStatus){
         handler.request(messages,current_sighting, (response) => {

@@ -30,7 +30,7 @@ exports.init = function(io) {
             });
 
             socket.on('disconnect', function(){
-                console.log('someone disconnected');
+               // console.log('someone disconnected');
             });
         } catch (e) {
         }
