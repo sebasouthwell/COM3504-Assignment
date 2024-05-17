@@ -52,7 +52,7 @@ function redirectPage() {
 }
 function prefillValues(){
     const urlParams = new URLSearchParams(window.location.search);
-    console.log(urlParams.size)
+    //console.log(urlParams.size)
     if (urlParams.has('sort')) {
         document.getElementById("sort").value = urlParams.get('sort');
         document.getElementById("dropdownSearch").innerHTML = document.getElementById( urlParams.get('sort')).innerHTML;

@@ -31,6 +31,7 @@ function makeNotification(title,body) {
     body['lang'] = 'en';
 
     if (Notification.permission === "granted"){
+        console.log('Notification permitted');
         navigator.serviceWorker.ready
             .then(function (swreg) {
                 console.log('Showing notification');
