@@ -1,4 +1,4 @@
-self.importScripts('/javascripts/indexDBHandler.js',"/javascripts/form_handler.js");
+self.importScripts('/javascripts/indexDBHandler.js',"/javascripts/form_handler.js", "/javascripts/idb-utility.js");
 const CACHE_NAME = 'Plantrest - v1'
 const DEFAULT_CACHING_FILES  = [
     'https://hips.hearstapps.com/hmg-prod/images/high-angle-view-of-variety-of-succulent-plants-royalty-free-image-1584462052.jpg',
@@ -89,83 +89,137 @@ self.addEventListener( 'activate', (event) => {
     return self.clients.claim();
 });
 
-self.addEventListener('fetch', (event) => {
-    debugLog('[Service Worker] : Fetching]');
-    const request = event.request;
-    let url = request;
-    if (request.url.includes('sight_view?id')) {
-        const parsedURL = new URL(request.url);
-        url = parsedURL.origin + '/sight_view';
-    }
-    if (request.method !== 'GET' || request.url.includes('cache_links') || request.url.includes('user_sightings') || request.url.includes('sight_messages') || request.url.includes('upload')){
-        if (!request.url.includes('socket.io')){
-            console.log(request);
+// Fetch event to fetch from cache first
+self.addEventListener('fetch', event => {
+    event.respondWith((async () => {
+        const cache = await caches.open(CACHE_NAME);
+        const cachedResponse = await cache.match(event.request);
+        if (cachedResponse) {
+            console.log('Service Worker: Fetching from Cache: ', event.request.url);
+            return cachedResponse;
         }
-        return fetch(event.request).then((response) => {
-            console.log(`Success : ${response}`);
-            return response;
-        }).catch((error) => {
-            console.log(`Failed : ${error}`);
-            return error;
-        })
-    }
-    else{
-        event.respondWith(
-            caches.match(url).then(function (response) {
-                if (response) {
-                    let modifiable = true;
-                    for (let i of notRefreshable){
-                        if (request.url.includes(i)){
-                            modifiable = false;
-                            break;
-                        }
-                    }
-                    if (modifiable){
-                        // Check if file has changed since cache
-                        fetch(request).then((request_output) => {
-                            const request_clone = request_output.clone();
-                            if (request_output.ok) {
-                                caches.open(CACHE_NAME).then((cache) => {
-                                    cache.put(request, request_clone);
-                                });
-                                response = request_clone;
-                            }
-                        }).catch((err) => {
-                            debugLog("Fetch error: " + err);
+        console.log('Service Worker: Fetching from URL: ', event.request.url);
+        return fetch(event.request);
+    })());
+});
+
+// self.addEventListener('fetch', (event) => {
+//     debugLog('[Service Worker] : Fetching]');
+//     const request = event.request;
+//     let url = request;
+//     if (request.url.includes('sight_view?id')) {
+//         const parsedURL = new URL(request.url);
+//         url = parsedURL.origin + '/sight_view';
+//     }
+//     if (request.method !== 'GET' || request.url.includes('cache_links') || request.url.includes('user_sightings') || request.url.includes('sight_messages') || request.url.includes('upload')){
+//         if (!request.url.includes('socket.io')){
+//             console.log(request);
+//         }
+//         return fetch(event.request).then((response) => {
+//             console.log(`Success : ${response}`);
+//             return response;
+//         }).catch((error) => {
+//             console.log(`Failed : ${error}`);
+//             return error;
+//         })
+//     }
+//     else{
+//         event.respondWith(
+//             caches.match(url).then(function (response) {
+//                 if (response) {
+//                     let modifiable = true;
+//                     for (let i of notRefreshable){
+//                         if (request.url.includes(i)){
+//                             modifiable = false;
+//                             break;
+//                         }
+//                     }
+//                     if (modifiable){
+//                         // Check if file has changed since cache
+//                         fetch(request).then((request_output) => {
+//                             const request_clone = request_output.clone();
+//                             if (request_output.ok) {
+//                                 caches.open(CACHE_NAME).then((cache) => {
+//                                     cache.put(request, request_clone);
+//                                 });
+//                                 response = request_clone;
+//                             }
+//                         }).catch((err) => {
+//                             debugLog("Fetch error: " + err);
+//                         });
+//                     }
+//                     return response;
+//                 }
+//                 else{
+//                     return fetch(request).then((request_output) =>{
+//                         if (request_output.ok) {
+//                             const request_clone = request_output.clone();
+//                             caches.open(CACHE_NAME).then((cache) => {
+//                                 cache.put(url, request_clone);
+//                             });
+//                         }
+//                         return request_output;
+//                     }).catch((err) => {
+//                         debugLog("Fetch error: " + err);
+//                     });
+//                 }
+//             })
+//         );
+//     }
+// });
+
+// self.addEventListener('sync', event => {
+//     if (event.tag === 'sync-sighting') {
+//         event.waitUntil(offlineToOnline()
+//             .then(() => {
+//                 console.log('Synced to Server')
+//             })
+//             .catch(() => {
+//                 console.log("Error syncing to server");
+//             })
+//         );
+//     }
+// });
+
+//Sync event to sync the todos
+self.addEventListener('sync', event => {
+    console.log('Service Worker: Syncing Started');
+    if (event.tag === 'sync-sighting') {
+        console.log('Service Worker: Syncing new Sightings');
+        openSyncSightingsIDB().then((syncPostDB) => {
+            getAllSyncSightings(syncPostDB).then((syncSightings) => {
+                for (const syncSighting of syncSightings) {
+                    console.log('Service Worker: Syncing new Sighting: ', syncSighting);
+                    console.log(syncSighting.text)
+                    // Create a FormData object
+                    const formData = new URLSearchParams();
+
+                    // Iterate over the properties of the JSON object and append them to FormData
+                    formData.append("text", syncSighting.text);
+
+                    // Fetch with FormData instead of JSON
+                    fetch('http://localhost:3000/c', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                    }).then(() => {
+                        console.log('Service Worker: Syncing new Sighting: ', syncSighting, ' done');
+                        deleteSyncSightingFromIDB(syncPostDB,syncSighting.id);
+                        // Send a notification
+                        self.registration.showNotification('Sighting Synced', {
+                            body: 'Sighting synced successfully!',
                         });
-                    }
-                    return response;
-                }
-                else{
-                    return fetch(request).then((request_output) =>{
-                        if (request_output.ok) {
-                            const request_clone = request_output.clone();
-                            caches.open(CACHE_NAME).then((cache) => {
-                                cache.put(url, request_clone);
-                            });
-                        }
-                        return request_output;
                     }).catch((err) => {
-                        debugLog("Fetch error: " + err);
+                        console.error('Service Worker: Syncing new Sighting: ', syncSighting, ' failed');
                     });
                 }
-            })
-        );
+            });
+        });
     }
 });
 
-self.addEventListener('sync', event => {
-    if (event.tag === 'sync-sighting') {
-        event.waitUntil(offlineToOnline()
-            .then(() => {
-                console.log('Synced to Server')
-            })
-            .catch(() => {
-                console.log("Error syncing to server");
-            })
-        );
-    }
-});
 /*
 self.addEventListener('sync', event => {
     console.log('Service Worker: Syncing Started');

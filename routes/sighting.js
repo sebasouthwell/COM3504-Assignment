@@ -18,7 +18,7 @@ var storage = multer.diskStorage({
 let upload = multer({storage});
 
 let stylesheets = ["/bootstrap/dist/css/bootstrap.min.css", "/stylesheets/style.css", "/bootstrap-icons/font/bootstrap-icons.css", "/bootstrap-datetime-picker/css/bootstrap-datetimepicker.css", "http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css"];
-let javascript = ["https://cdn.socket.io/4.5.4/socket.io.min.js", "/jquery/dist/jquery.js", "/bootstrap/dist/js/bootstrap.js", "/bootstrap/dist/js/bootstrap.bundle.js", "/bootstrap-datetime-picker/js/bootstrap-datetimepicker.js", "/javascripts/indexDBHandler.js","/javascripts/form_handler.js","/javascripts/name_and_sockets.js", "/javascripts/syncSightings.js", "/javascripts/sighting.js", "http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"];
+let javascript = ["https://cdn.socket.io/4.5.4/socket.io.min.js", "/jquery/dist/jquery.js", "/bootstrap/dist/js/bootstrap.js", "/bootstrap/dist/js/bootstrap.bundle.js", "/bootstrap-datetime-picker/js/bootstrap-datetimepicker.js", "/javascripts/indexDBHandler.js","/javascripts/form_handler.js","/javascripts/name_and_sockets.js", "/javascripts/syncSightings.js", "/javascripts/sighting.js", "http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js", "/javascripts/mainModule.js"];
 
 router.get('/', function(req, res, next) {
     let js = javascript.slice();
