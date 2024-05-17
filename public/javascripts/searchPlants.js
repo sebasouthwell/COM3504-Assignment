@@ -8,17 +8,27 @@ function redirectPage() {
     let hasFruit = document.getElementById('fruit').checked;
     let hasFlowers = document.getElementById('flowers').checked;
     let hasSeeds = document.getElementById('seeds').checked;
-    if (hasFlowers || hasSeeds || hasFruit){
+    if (hasFruit) {
         queryString.set('hasFruit', hasFruit);
-        queryString.set('hasFlowers', hasFlowers);
+    } else {
+        queryString.delete('hasFruit');
+    }
+    if (hasSeeds) {
         queryString.set('hasSeeds', hasSeeds);
+    } else {
+        queryString.delete('hasSeeds');
+    }
+    if (hasFlowers){
+        queryString.set('hasFlowers', hasFlowers);
+    } else {
+        queryString.delete('hasFlowers');
     }
 
     let getIdentified =  document.getElementById('identified').checked;
     let getPending =  document.getElementById('pending').checked;
-    // selects all if no boxes are ticked or both are
+    // selects none if no boxes are ticked or both are
     if((getIdentified && getPending) || (!getIdentified && !getPending)){
-
+        queryString.delete('identificationStatus');
     }else if(getIdentified){
         queryString.set('identificationStatus', 'Identified');
     }else{
@@ -42,9 +52,11 @@ function redirectPage() {
 }
 function prefillValues(){
     const urlParams = new URLSearchParams(window.location.search);
-    console.log(urlParams)
-    document.getElementById("sort").value = urlParams.get('sort');
-    document.getElementById("dropdownSearch").innerHTML = document.getElementById( urlParams.get('sort')).innerHTML;
+    console.log(urlParams.size)
+    if (urlParams.has('sort')) {
+        document.getElementById("sort").value = urlParams.get('sort');
+        document.getElementById("dropdownSearch").innerHTML = document.getElementById( urlParams.get('sort')).innerHTML;
+    }
     if(urlParams.get('hasFruit') === 'true'){
         document.getElementById('fruit').checked = true;
     }
@@ -67,17 +79,6 @@ function prefillValues(){
         document.getElementById('plantName').value = urlParams.get('givenName');
     }
 
-}
-
-
-    queryString.set('f', document.getElementById('fruit').checked);
-    queryString.set('fl', document.getElementById('flowers').checked);
-    queryString.set('i', document.getElementById('identified').checked);
-    queryString.set('p', document.getElementById('pending').checked);
-    queryString.set('radius', document.getElementById('radius').value);
-    queryString.set('name', document.getElementById('plantName').value);
-    queryString.set('sort', sort);
-    history.replaceState(null, null, "?" + queryString.toString());
 }
 
 window.addEventListener('load', () => {
