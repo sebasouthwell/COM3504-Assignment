@@ -159,6 +159,7 @@ router.post('/upload/sighting', upload.single('photo'), function (req, res){
             sightingData.plantEstSpread = parseFloat(sightingData.plantEstSpread)
             sightingData.sunExposureLevel = parseInt(sightingData.sunExposureLevel)
             sightingData.dateTime = new Date(sightingData.dateTime);
+            /* Commented out due to being broken - remove in merge
             let result = sighting.create(sightingData, filePath).then(
                 (sight) =>{
                     if (sight !== null) {
@@ -175,7 +176,7 @@ router.post('/upload/sighting', upload.single('photo'), function (req, res){
                         )
                     }
                 }
-            );
+            );*/
         }
         else{
             res.status(409).send({id: taken});
