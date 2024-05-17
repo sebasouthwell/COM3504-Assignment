@@ -36,15 +36,20 @@ function redirectPage() {
     }
     if(document.getElementById('radius').value){
         queryString.set('radius', document.getElementById('radius').value);
+    }else{
+        queryString.delete('radius');
     }
     if(document.getElementById('lat').value && document.getElementById('long').value) {
         queryString.set("coords", [document.getElementById('lat').value, document.getElementById('long').value])
     }
     if(document.getElementById('plantName').value){
         queryString.set('givenName', document.getElementById('plantName').value);
+    }else{
+        queryString.delete('givenName');
     }
 
     if(document.getElementById("sort").value) {
+        console.log(0)
         queryString.set('sort', document.getElementById("sort").value);
     }
 

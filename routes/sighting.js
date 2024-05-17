@@ -21,7 +21,7 @@ let stylesheets = ["/bootstrap/dist/css/bootstrap.min.css", "/stylesheets/style.
 let javascript = ["https://cdn.socket.io/4.5.4/socket.io.min.js", "/jquery/dist/jquery.js", "/bootstrap/dist/js/bootstrap.js", "/bootstrap/dist/js/bootstrap.bundle.js", "/bootstrap-datetime-picker/js/bootstrap-datetimepicker.js", "/javascripts/indexDBHandler.js","/javascripts/form_handler.js","/javascripts/name_and_sockets.js", "/javascripts/syncSightings.js", "/javascripts/sighting.js", "http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js", "/javascripts/mainModule.js"];
 
 router.get('/', function(req, res, next) {
-    let js = javascript.slice();
+    let js = javascript;
     js.push("/javascripts/locationManager.js");
     js.push("/javascripts/searchPlants.js");
 
@@ -34,11 +34,11 @@ router.get('/', function(req, res, next) {
             if (sortBy.startsWith('n')){
                 if (sortBy.endsWith('a')) {
                     sightings_json.sort((a, b) => {
-                        return a.plantName.localeCompare(b.plantName);
+                        return a.givenName.localeCompare(b.givenName);
                     });
                 } else {
                     sightings_json.sort((a, b) => {
-                        return b.plantName.localeCompare(a.plantName);
+                        return b.givenName.localeCompare(a.givenName);
                     });
                 }
             }
@@ -85,7 +85,6 @@ router.get('/sight', function (req, res, next) {
 });
 
 function findRadius(sighting, currentLocation){
-    console.log('k')
     coords = currentLocation.split(',');
     lat = parseInt(coords[0]);
     long = parseInt(coords[1]);
