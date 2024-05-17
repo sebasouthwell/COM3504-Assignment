@@ -82,48 +82,49 @@ exports.getAllFilter = function(query_map){
         if (sightings == null){
             return null;
         }
-    delete query_map['sort'];
-    let radius, coords, lat, long;
-    const checkKeys = ['hasFruit', 'hasFlowers', 'hasSeeds'];
+        delete query_map['sort'];
+        let radius, coords, lat, long;
+        const checkKeys = ['hasFruit', 'hasFlowers', 'hasSeeds'];
 
-    if(checkKeys.every(key => query_map.hasOwnProperty(key))){
-        query_map['hasFruit'] = query_map['hasFruit'] === 'true'
-        query_map['hasFlowers'] = query_map['hasFlowers'] === 'true'
-        query_map['hasSeeds'] = query_map['hasSeeds'] === 'true'
-    }
-    if (query_map.hasOwnProperty('radius')) {
-        if (query_map['coords'] !== undefined) {
-            coords = query_map['coords'].split(',');
-            radius = parseInt(query_map['radius']);
-            lat = parseInt(coords[0]);
-            long = parseInt(coords[1]);
+        if(checkKeys.every(key => query_map.hasOwnProperty(key))){
+            query_map['hasFruit'] = query_map['hasFruit'] === 'true'
+            query_map['hasFlowers'] = query_map['hasFlowers'] === 'true'
+            query_map['hasSeeds'] = query_map['hasSeeds'] === 'true'
         }
-        delete query_map['radius'];
-    }
-    delete query_map['coords'];
-    return sightingModel.find(query_map).then(sightings => {
-        let newSightings = [];
-        for (let i = 0; i < sightings.length; i++){
-            //checks if within radius if there is one
-            if (lat && long){
-                sightingRadius = Math.sqrt(
-                    Math.pow(Math.abs(sightings[i].lat - lat), 2)+Math.pow(Math.abs(sightings[i].long - long), 2)
-                )
+        if (query_map.hasOwnProperty('radius')) {
+            if (query_map['coords'] !== undefined) {
+                coords = query_map['coords'].split(',');
+                radius = parseInt(query_map['radius']);
+                lat = parseInt(coords[0]);
+                long = parseInt(coords[1]);
             }
-            if (radius !== undefined) {
-                if (sightingRadius <= radius){
-                    sightings[i]["radius"]= radius;
+            delete query_map['radius'];
+        }
+        delete query_map['coords'];
+        return sightingModel.find(query_map).then(sightings => {
+            let newSightings = [];
+            for (let i = 0; i < sightings.length; i++){
+                //checks if within radius if there is one
+                if (lat && long){
+                    sightingRadius = Math.sqrt(
+                        Math.pow(Math.abs(sightings[i].lat - lat), 2)+Math.pow(Math.abs(sightings[i].long - long), 2)
+                    )
+                }
+                if (radius !== undefined) {
+                    if (sightingRadius <= radius){
+                        sightings[i]["radius"]= radius;
+                        newSightings.push(parseSighting(sightings[i]));
+                    }
+
+                }else {
                     newSightings.push(parseSighting(sightings[i]));
                 }
-
-            }else {
-                newSightings.push(parseSighting(sightings[i]));
             }
-        }
-        return JSON.stringify(newSightings);
-    }).catch(err => {
-        console.log(err);
-        return null;
+            return JSON.stringify(newSightings);
+        }).catch(err => {
+            console.log(err);
+            return null;
+        });
     });
 }
 
