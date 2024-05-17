@@ -1,6 +1,6 @@
 <!doctype html>
 <html>
-<head>
+<head >
     <title><%= title %></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8">
@@ -16,24 +16,40 @@
     <% for (var i=0; i < javascripts.length; i++) { %>
     <script type="text/javascript" src="<%= javascripts[i] %>"></script>
     <% } %>
-    <script type="module" src="/javascripts/mainModule.js"></script>
-    <link rel="manifest" href="/manifest.json">
 </head>
 <header class="align-items-center rounded mb-2">
     <div class="bg-warning text-dark text-center p-2 hidden" id="client_warn">
         Error: Could not connect to IndexedDB, Offline mode is not available.
     </div>
     <div class="row">
-        <div class="col">
+        <div class="col-4">
             <a href="/" class="link-success" data-toggle="tooltip" data-placement="bottom" title="View all sightings"><img class="logo" src="/static/images/logo.png" alt=""></a>
         </div>
-        <div class="d-flex align-items-center col justify-content-center">
+        <div class="d-flex align-items-center col-4 justify-content-center">
             <h1 class="text-center text-primary">Planttrest</h1>
         </div>
-        <div class="d-flex align-items-center col justify-content-end text-primary">
-            <button class="btn btn-outline-info mx-2">
-                <a href="/login" class="text-primary mx-2 text-decoration-none">Nickname: <span id="nickname"></span> </a>
-            </button>
+        <div class="collapse navbar-collapse col-4 justify-content-end" id="navbarNavDropdownMobile" >
+            <a class="btn btn-secondary dropdown-toggle d-flex justify-content-center align-items-center" href="#" role="button" id="mobileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-justify" style="font-size: 24px"></i>
+            </a>
+            <ul class="dropdown-menu text-center" aria-labelledby="mobileDropdown">
+                <li class="nav-item">
+                    <a class="nav-link" href="/login">Nickname: <span id="nickname"></span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link link-success" href="/" data-toggle="tooltip" data-placement="bottom" title="Add sighting">
+                        <i class="bi bi-search pe-2" style="font-size: 24px;"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link link-success" href="/sight" data-toggle="tooltip" data-placement="bottom" title="Add sighting">
+                        <i class="bi bi-clipboard-data pe-2" style="font-size: 24px;"></i>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="d-flex align-items-center col-4 justify-content-end text-primary" id="navbarNavDropdown" >
+            <a href="/login">Nickname: <span id="nickname"></span> </a>
             <a href="/" class="link-success" data-toggle="tooltip" data-placement="bottom" title="Add sighting"><i class="bi bi-search pe-2"  style="font-size: 60px;"></i></a>
             <a href="/sight" class="link-success" data-toggle="tooltip" data-placement="bottom" title="Add sighting"><i class="bi bi-clipboard-data pe-2" style="font-size: 60px;"></i></a>
         </div>
