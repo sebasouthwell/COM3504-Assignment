@@ -20,15 +20,16 @@ class indexDBHandler{
     constructor(dbName,objStores,debug=false){
         this.indexedDB = indexedDB;
         this.currentDB = this.indexedDB.open(dbName);
-        this.warning = document.getElementById('client_warn');
+        if (typeof document !== 'undefined'){
+            this.warning = document.getElementById('client_warn');
+            this.currentDB.addEventListener("error", function(error) {
+                this.warning.innerHTML = '<h1>Warning: Offline Mode is not available</h1>';
+                if (debug){
+                    console.log('Error opening database' + JSON.stringify(error));
+                }
+            });
+        }
         this.ready = true;
-        this.currentDB.addEventListener("error", function(error) {
-            this.warning.innerHTML = '<h1>Warning: Offline Mode is not available</h1>';
-            if (debug){
-                console.log('Error opening database' + JSON.stringify(error));
-            }
-        });
-
         this.currentDB.addEventListener("success", function(event) {
             if (debug){
                 console.log('Database opened successfully');

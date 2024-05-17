@@ -3,28 +3,7 @@ let current_sighting = null;
 let otherRooms = [];
 let onlinePage = false;
 let socket = io();
-let onlineStatus = false;
 const generateQuickGuid = size => [...Array(size)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
-function isOnline() {
-    fetch(location.origin +'/cache_links').then((response) =>{
-        console.log(response);
-        if (response.status === 200){
-            onlineStatus = true;
-            console.log("In Online Mode");
-        }
-        else {
-            onlineStatus = false;
-            console.log("In Offline Mode");
-        }
-        return onlineStatus;
-    }).catch(
-        e => {
-            onlineStatus = false;
-            console.log("In Offline Mode");
-            return onlineStatus;
-        }
-    )
-}
 async function genRandomName(wordCount,maxNum){
     var word_list = "https://raw.githubusercontent.com/felixfischer/categorized-words/master/2of12id.json";
     try{
@@ -109,6 +88,7 @@ function changeName(new_name){
 window.addEventListener('load', () =>{
     isOnline();
     loadNameAndSockets();
+    requestSync();
 });
 
 function connectToPageRoom() {
@@ -220,7 +200,7 @@ function sendChatText() {
             };
             console.log('Offline saving message');
             handler.update(messages,current_sighting, response, (response) => {
-
+                requestSync();
             });
         });
     }

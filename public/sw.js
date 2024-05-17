@@ -1,3 +1,4 @@
+self.importScripts('/javascripts/indexDBHandler.js',"/javascripts/form_handler.js");
 const CACHE_NAME = 'Plantrest - v1'
 const DEFAULT_CACHING_FILES  = [
     'https://hips.hearstapps.com/hmg-prod/images/high-angle-view-of-variety-of-succulent-plants-royalty-free-image-1584462052.jpg',
@@ -18,6 +19,8 @@ const DEFAULT_CACHING_FILES  = [
     '/javascripts/localSightView.js',
     '/javascripts/indexDBHandler.js',
     '/javascripts/createSighting.js',
+    '/javascripts/syncSightings.js',
+    "/javascripts/form_handler.js",
     '/javascripts/mainModule.js',
     '/javascripts/searchPlants.js',
     '/javascripts/sighting.js',
@@ -36,6 +39,8 @@ const DEFAULT_CACHING_FILES  = [
     '/static/images/image_icon.png',
     'https://cdn.socket.io/4.5.4/socket.io.min.js'
 ];
+
+let notRefreshable = ['js','css', 'bootstrap','manifest','static'];
 
 let swDebug= false;
 function debugLog(message) {
@@ -107,16 +112,56 @@ self.addEventListener('fetch', (event) => {
     else{
         event.respondWith(
             caches.match(url).then(function (response) {
-                return response
-                    || fetch(url)
-                        .then(function (response) {
-                            if (response.ok) {
-                                return response;
+                if (response) {
+                    let modifiable = true;
+                    for (let i of notRefreshable){
+                        if (request.url.includes(i)){
+                            modifiable = false;
+                            break;
+                        }
+                    }
+                    if (modifiable){
+                        // Check if file has changed since cache
+                        fetch(request).then((request_output) => {
+                            const request_clone = request_output.clone();
+                            if (request_output.ok) {
+                                caches.open(CACHE_NAME).then((cache) => {
+                                    cache.put(request, request_clone);
+                                });
+                                response = request_clone;
                             }
-                        })
-                        .catch(function (err) {
-                            debugLog("error: " + err);
-                        })
+                        }).catch((err) => {
+                            debugLog("Fetch error: " + err);
+                        });
+                    }
+                    return response;
+                }
+                else{
+                    return fetch(request).then((request_output) =>{
+                        if (request_output.ok) {
+                            const request_clone = request_output.clone();
+                            caches.open(CACHE_NAME).then((cache) => {
+                                cache.put(url, request_clone);
+                            });
+                        }
+                        return request_output;
+                    }).catch((err) => {
+                        debugLog("Fetch error: " + err);
+                    });
+                }
+            })
+        );
+    }
+});
+
+self.addEventListener('sync', event => {
+    if (event.tag === 'sync-sighting') {
+        event.waitUntil(offlineToOnline()
+            .then(() => {
+                console.log('Synced to Server')
+            })
+            .catch(() => {
+                console.log("Error syncing to server");
             })
         );
     }

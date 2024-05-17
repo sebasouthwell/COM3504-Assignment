@@ -52,6 +52,7 @@ function submitForm(event) {
                     }else {
                         handler.update(sightings,guid,sighting,() => {
                             makeNotification('Could not upload sighting.', {body: 'Your sighting has been saved to you browser and will be uploaded once you regain server connection'});
+                            requestSync();
                         })
                         window.location.href = window.origin + '/sight_view?id=' + guid;
                     }
@@ -60,6 +61,7 @@ function submitForm(event) {
         else if (checkValidity(sighting)){
             handler.update(sightings,guid,sighting,() => {
                 makeNotification('Sighting Saved: Offline Mode', {body: 'You are currently offline, your sighting has been saved to you browser and will be uploaded once you regain server connection'});
+                requestSync();
             })
             window.location.href = window.origin + '/sight_view?id=' + guid;
         }
