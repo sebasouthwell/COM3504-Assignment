@@ -135,20 +135,6 @@
         </div>
     </a>
 </div>
-<script>
-    //  Javascript to check all navigation values and redirect to a url with those values
-    let sort = false
-    function setSort(value){
-       sort = value
-    }
-    function redirectPage() {
-        let s =document.getElementById('seeds').checked
-        let f = document.getElementById('fruit').checked
-        let i = document.getElementById('identified').checked
-        let p = document.getElementById('pending').checked
-        let radius = document.getElementById('radius').value
-        console.log(s,f,i,p, radius, sort)
-    }
-</script>
+
 </body>
 <%- include('partials/footer') %>

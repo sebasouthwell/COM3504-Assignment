@@ -120,21 +120,17 @@ function configureListeners() {
     // We are on a sighting page#
     console.log("Configuring listeners");
     socket.on('comment', function(room,userid,comment){
-        console.log("NOTIF comment socket on");
         fetch('/sighting_data/' + room ).then(
             (response) => {
                 response.json().then((response) => {
                     let sightingNick = response['userNickName'];
-                    if (sightingNick !== name){
-                        console.log("NOTIF Not same nickname");
-                        // if (room === current_sighting){
-                        //     console.log("NOTIF room === current");
-                        //     writeOnHistory(userid, comment, new Date());
-                        // }
+                    if (sightingNick === name && userid !== name){
                         if (otherRooms.includes(room)){
-                            console.log("NOTIF Not same room");
                             // If it's from a different page, we notify the user
+                            console.log("NOTIF triggered from socket");
                             makeNotification('New Comment on Your Sighting', {body: `${userid}: ${comment}`});
+                        } else {
+                            writeOnHistory(userid, comment, new Date());
                         }
                     }
                 })
@@ -227,9 +223,7 @@ function getPreviousSuggestions(){
  */
 function sendChatText() {
     let chatText = document.getElementById('chat_input').value;
-    console.log("NOTIF comment sent");
     if (onlinePage){
-        console.log("NOTIF comment online");
         socket.emit('comment', current_sighting, name, chatText);
     }
     if (!onlineStatus){

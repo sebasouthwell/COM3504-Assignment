@@ -8,17 +8,27 @@ function redirectPage() {
     let hasFruit = document.getElementById('fruit').checked;
     let hasFlowers = document.getElementById('flowers').checked;
     let hasSeeds = document.getElementById('seeds').checked;
-    if (hasFlowers || hasSeeds || hasFruit){
+    if (hasFruit) {
         queryString.set('hasFruit', hasFruit);
-        queryString.set('hasFlowers', hasFlowers);
+    } else {
+        queryString.delete('hasFruit');
+    }
+    if (hasSeeds) {
         queryString.set('hasSeeds', hasSeeds);
+    } else {
+        queryString.delete('hasSeeds');
+    }
+    if (hasFlowers){
+        queryString.set('hasFlowers', hasFlowers);
+    } else {
+        queryString.delete('hasFlowers');
     }
 
     let getIdentified =  document.getElementById('identified').checked;
     let getPending =  document.getElementById('pending').checked;
-    // selects all if no boxes are ticked or both are
+    // selects none if no boxes are ticked or both are
     if((getIdentified && getPending) || (!getIdentified && !getPending)){
-
+        queryString.delete('identificationStatus');
     }else if(getIdentified){
         queryString.set('identificationStatus', 'Identified');
     }else{
@@ -26,15 +36,20 @@ function redirectPage() {
     }
     if(document.getElementById('radius').value){
         queryString.set('radius', document.getElementById('radius').value);
+    }else{
+        queryString.delete('radius');
     }
     if(document.getElementById('lat').value && document.getElementById('long').value) {
         queryString.set("coords", [document.getElementById('lat').value, document.getElementById('long').value])
     }
     if(document.getElementById('plantName').value){
         queryString.set('givenName', document.getElementById('plantName').value);
+    }else{
+        queryString.delete('givenName');
     }
 
     if(document.getElementById("sort").value) {
+        console.log(0)
         queryString.set('sort', document.getElementById("sort").value);
     }
 
@@ -42,9 +57,11 @@ function redirectPage() {
 }
 function prefillValues(){
     const urlParams = new URLSearchParams(window.location.search);
-    console.log(urlParams)
-    document.getElementById("sort").value = urlParams.get('sort');
-    document.getElementById("dropdownSearch").innerHTML = document.getElementById( urlParams.get('sort')).innerHTML;
+    //console.log(urlParams.size)
+    if (urlParams.has('sort')) {
+        document.getElementById("sort").value = urlParams.get('sort');
+        document.getElementById("dropdownSearch").innerHTML = document.getElementById( urlParams.get('sort')).innerHTML;
+    }
     if(urlParams.get('hasFruit') === 'true'){
         document.getElementById('fruit').checked = true;
     }
@@ -66,7 +83,7 @@ function prefillValues(){
     if(urlParams.get('givenName')){
         document.getElementById('plantName').value = urlParams.get('givenName');
     }
-    history.replaceState(null, null, "?" + queryString.toString());
+
 }
 
 window.addEventListener('load', () => {
