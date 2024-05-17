@@ -55,7 +55,9 @@ function loadNameAndSockets() {
                     if (nickname !== undefined) {
                         name = nickname;
                         handler.update(user_data, 'name',nickname,() => {
-                            $('#nickname')[0].innerHTML = nickname;});
+                            $('#nickname')[0].innerHTML = nickname;
+                            $('#nickname_phone')[0].innerHTML = nickname;
+                        });
                     }
                 }
             )
