@@ -16,37 +16,37 @@ window.addEventListener('load', function () {
     // Set initial color preview
     colorPreview.style.backgroundColor = colorInput.value;
     var form = document.getElementById('sightingForm');
-    form.addEventListener('submit', function (event) {
-        event.preventDefault();
-        var imageString = null;
-        let file = $('#photoUpload')[0]['files'][0];
-        if (file != null){
-            var reader = new FileReader();
-            reader.onloadend = function () {
-                imageString = reader.result;
-            }
-            reader.readAsDataURL(file);
-            for (i = 0; i < 100; i++){
-                let j = i;
-                // Using a top-level function, which can't be async, and just need a millisecond delay.
-            }
+    form.addEventListener('submit', submitForm);
+});
+
+function submitForm(event) {
+    event.preventDefault();
+    var imageString = null;
+    let file = $('#photoUpload')[0]['files'][0];
+    if (file != null){
+        var reader = new FileReader();
+        reader.onloadend = function () {
+            imageString = reader.result;
         }
-        else{
-            console.log("No Image")
+        reader.readAsDataURL(file);
+        for (i = 0; i < 100; i++){
+            let j = i;
+            // Using a top-level function, which can't be async, and just need a millisecond delay.
         }
-        function generateQuickGuid() {
-            return Math.random().toString(36).substring(2, 25) +
-                Math.random().toString(36).substring(2, 25);
+    }
+    else{
+        console.log("No Image")
+    }
+    let guid = generateQuickGuid(24)
+    setTimeout(function(){
+        let sighting = {
+            _id: guid, userNickName: name,givenName: $("#givenName").val(),description:$('#description').val(),lat: $('#lat').val(),long: $('#long').val(), plantEstHeight: $('#plantEstHeight').val(), plantEstSpread: $('#plantEstSpread').val(), hasFlowers: $('#hasFlowers').is(':checked'), flowerColour: $('#flowerColour').val(), hasFruit: $('#hasFruit').is(':checked'), hasSeeds: $('#hasSeeds').is(':checked'), sunExposureLevel: $('#sunExposureLevel').val(), dateTime: $('#dateTime').val(), identificationStatus: $('#identificationStatus').val(), photo: imageString, chat: []
         }
-        let guid = generateQuickGuid()
-        setTimeout(async function(){
-            let sighting = {
-                _id: guid, userNickName: name,givenName: $("#givenName").val(),description:$('#description').val(),lat: $('#lat').val(),long: $('#long').val(), plantEstHeight: $('#plantEstHeight').val(), plantEstSpread: $('#plantEstSpread').val(), hasFlowers: $('#hasFlowers').is(':checked'), flowerColour: $('#flowerColour').val(), hasFruit: $('#hasFruit').is(':checked'), hasSeeds: $('#hasSeeds').is(':checked'), sunExposureLevel: $('#sunExposureLevel').val(), dateTime: $('#dateTime').val(), identificationStatus: $('#identificationStatus').val(), photo: imageString, chat: []
-            }
-            if (onlineStatus){
-                console.log(sighting)
-                uploadSighting(sighting,[],imageString).then(
+        if (onlineStatus){
+            console.log(sighting)
+            uploadSighting(sighting,imageString).then(
                 (id) => {
+                    console.log(id);
                     if (id){
                         window.location.href = window.origin + '/sight_view/' + id;
                     }else {
@@ -56,16 +56,15 @@ window.addEventListener('load', function () {
                         window.location.href = window.origin + '/sight_view?id=' + guid;
                     }
                 })
-            }
-            else if (checkValidity(sighting)){
-                handler.update(sightings,guid,sighting,() => {
-                    makeNotification('Sighting Saved: Offline Mode', {body: 'You are currently offline, your sighting has been saved to you browser and will be uploaded once you regain server connection'});
-                })
-                window.location.href = window.origin + '/sight_view?id=' + guid;
-            }
-        },100);
-    });
-});
+        }
+        else if (checkValidity(sighting)){
+            handler.update(sightings,guid,sighting,() => {
+                makeNotification('Sighting Saved: Offline Mode', {body: 'You are currently offline, your sighting has been saved to you browser and will be uploaded once you regain server connection'});
+            })
+            window.location.href = window.origin + '/sight_view?id=' + guid;
+        }
+    },100);
+}
 
 function checkValidity(sighting){
     if (name === undefined || name=== 0){

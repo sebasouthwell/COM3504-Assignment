@@ -4,6 +4,7 @@ let otherRooms = [];
 let onlinePage = false;
 let socket = io();
 let onlineStatus = false;
+const generateQuickGuid = size => [...Array(size)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
 function isOnline() {
     fetch(location.origin +'/cache_links').then((response) =>{
         console.log(response);
@@ -176,16 +177,19 @@ function getPreviousChat(){
         onlineStatus = false;
         writeOnHistory('Error', 'Cannot receive previous messages from server, these are available once you return online.',new Date());
         // Get index db history
-        handler.request(messages,current_sighting,(response) => {
-            console.log("Messages ready for upload")
-            console.log(response)
-            if (response !== undefined){
-                for (let i = 0; i < response.length; i++){
-                    writeOnHistory(response[i]['userNickName'],response[i]['message'],new Date(response[i]['dateTimestamp']));
-                }
-            }
-        });
     })
+    handler.request(messages,current_sighting,(response) => {
+        console.log(response)
+        if (response !== undefined){
+            var values = Object.keys(response).map(function(key){
+                return response[key];
+            });
+            values.sort((a,b) => a.dateTimestamp - b.dateTimestamp)
+            for (i = 0; i < values.length; i++){
+                writeOnHistory(values[i]['userNickName'],values[i]['message'],new Date(values[i]['dateTimestamp']));
+            }
+        }
+    });
 }
 
 
@@ -203,15 +207,17 @@ function sendChatText() {
     if (!onlineStatus){
         handler.request(messages,current_sighting, (response) => {
             if (response === undefined){
-                response = [];
+                response = {};
             }
-            response.push({
+            let guid = generateQuickGuid(24);
+            response[guid] ={
                 room: current_sighting,
                 userNickName: name,
                 message: chatText,
                 dateTimestamp: Date.now(),
-                onlinePage: onlinePage
-            });
+                onlinePage: onlinePage,
+                idempotency_token: generateQuickGuid(24)
+            };
             console.log('Offline saving message');
             handler.update(messages,current_sighting, response, (response) => {
 

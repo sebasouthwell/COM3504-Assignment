@@ -109,5 +109,18 @@ class indexDBHandler{
             }
         });
     }
+
+    getAllKeys(objStoreName, callback){
+        const idbResult = this.currentDB.result;
+        const transaction = idbResult.transaction(objStoreName, "readonly");
+        const store = transaction.objectStore(objStoreName);
+        const getRequest = store.getAllKeys();
+        getRequest.addEventListener("success", function (event) {
+            if (callback){
+                callback(getRequest.result);
+            }
+        });
+    }
+
 }
 let handler = new indexDBHandler('application', objStores, true);

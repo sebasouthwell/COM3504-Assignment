@@ -144,24 +144,11 @@ router.post('/upload/sighting', upload.single('photo'), function (req, res){
             sightingData.dateTime = new Date(sightingData.dateTime);
             let result = sighting.create(sightingData, filePath).then(
                 (sight) =>{
-                    if (sight !== null){
+                    if (sight !== null) {
                         let s = JSON.parse(sight);
                         let id = s['_id'].toString();
                         console.log(id);
-                        let chats = sightingData.chats;
-                        console.log(JSON.stringify(chats));
-                        for (let i = 0; i < chats.length; i++){
-                            let message_info = chats[i];
-                            console.log(JSON.stringify(message_info));
-                            message.create({
-                                sighting: id,
-                                userNickName: message_info['userNickName'],
-                                message: message_info['userNickName'],
-                                dateTimestamp: message_info['dateTimestamp']
-                            });
-                        }
-                        console.log("Chat :" + chats);
-                        res.status(200).send({id: id});
+                        res.status(200).send({id:id});
                     }
                     else{
                         sighting.idempotency_check(sightingData._id).then(
@@ -178,6 +165,53 @@ router.post('/upload/sighting', upload.single('photo'), function (req, res){
         }
     })
 });
+
+router.post('/upload/chat', async (req, res) =>{
+    let chatData = req.body;
+    message.idempotency_check(chatData.idempotency_token).then(async (taken) => {
+        if (!taken) {
+            let sightingRoom = chatData.room;
+            if (!chatData.onlinePage) {
+                sightingRoom = await sighting.idempotency_check(chatData.room).then((id) => {
+                    return id
+                });
+            }
+            if (!sightingRoom){
+                res.status(403).send({state: 'failed'})
+            }else{
+                let message_data = message.create({
+                        sighting: sightingRoom,
+                        userNickName: chatData.userNickName,
+                        message: chatData.message,
+                        dateTimestamp: chatData.dateTimestamp,
+                        idempotency_token: chatData.idempotency_token,
+                    }
+                ).then((message_data) => {
+                    if (message_data !== null) {
+                        let m = JSON.parse(message_data);
+                        let id = m['_id'].toString();
+                        console.log(id);
+                        res.status(200).send({state: 'success'});
+                    } else {
+                        message.idempotency_check(chatData.idempotency_token).then(
+                            (match) => {
+                                if (!match) {
+                                    // If the Idempotency does not exist, then return failed response
+                                    res.status(409).send({state: 'failed'});
+                                } else {
+                                    // If match exists, message of idempotency is in DB
+                                    res.status(200).send({state: 'success'});
+                                }
+                            }
+                        )
+                    }
+                })
+            }
+        } else {
+            res.status(200).send({state: 'success'}); // Message already exists, it is already on server
+        }
+    })
+})
 
 router.get('/sight_view/:id', function (req, res, next) {
     let js = javascript.slice();
@@ -217,27 +251,6 @@ router.get('/sighting_data/:id', function (req, res) {
         res.status(500).send(err);
     });
 });
-
-router.post('/sighting_upload', function (req, res) {
-    let body = req.body;
-    try{
-        console.log(body);
-        let chat = body['chat'];
-        if (!body['hasFlowers']){
-            delete body['flowerColour'];
-        }
-        if (body['photo']){
-
-        }
-        res.status(200).send(chat);
-    }
-    catch(err){
-        console.log(err);
-        res.status(500).send(err);
-    }
-    res.status(200).send([])
-});
-
 // For pages that have not been uploaded to the mongoDB yet
 router.get('/sight_view', (req, res) => {
     let js = javascript.slice();

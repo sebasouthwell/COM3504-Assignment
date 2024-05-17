@@ -25,14 +25,8 @@ async function base64toBlob(b64){
     }
 }
 
-async function getSightingForm(sighting,chats = [], imageString){
+async function getSightingForm(sighting, imageString){
     let formData = new FormData();
-    if (chats.length > 0){
-        // Convert to String json
-        let chats_json = JSON.stringify(chats);
-        formData.append('chats', chats_json);
-        delete sighting.chats;
-    }
     let sighting_keys = sighting.key
     for (const key in sighting){
         formData.append(key, sighting[key])
@@ -46,17 +40,18 @@ async function getSightingForm(sighting,chats = [], imageString){
     return formData;
 }
 
-async function uploadSighting(sighting,chats,imageString){
+async function uploadSighting(sighting,imageString){
     try {
-        let formData = await getSightingForm(sighting,chats,imageString);
-        let res = await
-            fetch('/upload/sighting', {
+        let formData = await getSightingForm(sighting,imageString);
+        let res = await fetch('/upload/sighting', {
             method: 'POST',
             body: formData
         }).then((response) => {
             return response.json();
-        });
-        return res['id'];
+        }).catch((response) => {
+            return null;
+        })
+        return res === null ? null : res['id'];
     }
     catch (err){
         console.log(err);
@@ -64,6 +59,71 @@ async function uploadSighting(sighting,chats,imageString){
     }
 }
 
+async function uploadSightingsFromIndex(){
+    handler.getAll(sightings,async (sighting_list) => {
+        for (let i = 0; i < sighting_list.length; i++) {
+            uploadSighting(sighting_list[i], null).then((id) => {
+                let sightingID = sighting_list[i]._id;
+                console.log(sightingID);
+                if (id){
+                    handler.delete(sightings, sightingID, () => {
+                    });
+                }
+            })
+        }
+    })
+}
+
+async function uploadChats(){
+    handler.getAllKeys(messages, (keys) => {
+        for (let key of keys){
+            handler.request(messages,key,async (chats) => {
+                console.log("Old Chats");
+                console.log(chats);
+                let keys = Object.keys(chats);
+                for (let j = 0; j < keys.length; j++){
+                    let key = keys[j];
+                    console.log(key)
+                    try{
+                        let chat_message = JSON.stringify(chats[key]);
+                        let res = await fetch('/upload/chat', {
+                            method: 'POST',
+                            body: chat_message,
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        }).then((response) => {
+                            return response.json();
+                        }).catch((response) => {
+                            return null;
+                        })
+                        console.log(res);
+                        if (res !== null && res['state'] === 'success'){
+                            delete chats[key];
+                            console.log(chats);
+                        }
+                    }
+                    catch (err){
+                        console.log(err);
+                    }
+                }
+                console.log("New Chats");
+                if (Object.keys(chats).length === 0){
+                    handler.delete(messages,key,() => {});
+                }
+                else{
+                    // This removes all uploaded chats from localDB
+                    handler.update(messages, key, chats, () => {
+                    });
+                }
+            });
+        }
+    })
+}
+async function offlineToOnline(){
+    await uploadSightingsFromIndex();
+    await uploadChats();
+}
 
 function setupNotifications() {
     // Check if the browser supports the Notification API

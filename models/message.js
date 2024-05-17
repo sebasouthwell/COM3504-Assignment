@@ -8,6 +8,7 @@ var MessageSchema = new Schema(
         message: {type: String, required: true, max: 100},
         userNickName: {type: String, required: true, max: 100},
         dateTimestamp   : {type: Date, required: true},
+        idempotency_token : {type: String, required: true, max:100, unique: true}
     });
 
 MessageSchema.set('toObject', {getters: true, virtuals: true});

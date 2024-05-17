@@ -39,7 +39,7 @@ exports.create = function(sightingData, filePath) {
 };
 
 exports.getAll = function(){
-    return sightingModel.find({}).then(sightings => {
+    return sightingModel.find({}).sort('dateTime').then(sightings => {
         let newSightings = [];
         for (let i = 0; i < sightings.length; i++){
             newSightings.push(parseSighting(sightings[i]));
@@ -77,7 +77,7 @@ const parseSighting = function(sighting){
 }
 
 exports.getAllFilter = function(query_map){
-    return sightingModel.find(query_map).then(sightings => {
+    return sightingModel.find(query_map).sort('dateTime').then(sightings => {
         if (sightings == null){
             return null;
         }
