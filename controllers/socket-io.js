@@ -1,4 +1,5 @@
 var message = require('../controllers/message');
+var suggestions = require('../controllers/suggestions')
 function generateQuickGuid() {
     return Math.random().toString(36).substring(2, 25) +
         Math.random().toString(36).substring(2, 25);
@@ -33,10 +34,17 @@ exports.init = function(io) {
                 )
             });
 
-            socket.on('suggestion', function (room, userId, chatText) {
-                io.sockets.to(room).emit('suggestion', room, userId, chatText);
+            socket.on('suggestion', function (room, userId, sighting_url, sighting_name) {
+                suggestions.create({
+                    sighting: room,
+                    suggestedName: sighting_name,
+                    DBPediaURL: sighting_url,
+                    suggestorNickname: userId,
+                    status: 'pending'
+                }).then((suggestion) => {
+                    io.sockets.to(room).emit('suggestion',room, userId, sighting_url, sighting_name, suggestion._id);
+                });
             });
-
             socket.on('disconnect', function(){
                // console.log('someone disconnected');
             });

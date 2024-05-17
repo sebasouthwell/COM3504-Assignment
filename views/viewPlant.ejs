@@ -11,17 +11,17 @@
                         <div class="p-2 rounded-top rounded-bottom bg-secondary-subtle col" style="width: fit-content">
                             <div class="text-center row">
                                 <div class="col-9">
-                                    <p class="text-success" style="font-size: 12px">Spread: <%= sighting.plantEstSpread %>cm<br><i class="bi bi-arrows text-success text-center"></i></p>
+                                    <p class="text-success" style="font-size: 12px"><p id="sightingSpread" class="text-success">Spread: <%= sighting.plantEstSpread %>cm</p><br><i class="bi bi-arrows text-success text-center"></i></p>
                                 </div>
                                 <div class="col-3"></div>
                             </div>
                             <div class="d-flex row justify-content-center">
                                 <div class="col-9">
-                                    <img class="rounded w-100" src="<%= sighting.photo %>"><br>
+                                    <img class="rounded w-100" id="sightingPhoto1" src="<%= sighting.photo %>"><br>
                                 </div>
                                 <div class="col-3 align-content-center">
                                     <div class="">
-                                        <p class="d-flex text-success" style="font-size: 12px"><i class="bi bi-arrows-vertical text-success"></i>Height: <%= sighting.plantEstHeight %>cm</p>
+                                        <p class="d-flex text-success" style="font-size: 12px"><i class="bi bi-arrows-vertical text-success"></i><p id="sightingHeight" class="text-success">Height: <%= sighting.plantEstHeight %>cm </p></p>
                                     </div>
                                 </div>
                             </div>
@@ -53,7 +53,9 @@
                                     <img src="/static/images/Flower.png" class="rounded thumbnail border border-3 border-black" style="<%= sighting.flowerColour ? "background-color: " + sighting.flowerColour + " !important;" : "" %>">
                                 </div>
                             <% } %>
-
+                        </div>
+                        <div class="col pt-4 ps-lg-4 dbpedia_info d-flex text-success" id="dbpedia_info" >
+                            <%= sighting.DBPediaURL%>
                         </div>
                     </div>
                     <div class="col" id="plantPhoto">
@@ -61,11 +63,11 @@
                             <div class="col-2"></div>
                                 <div class="rounded-top bg-secondary-subtle col-8">
                                     <div class="row">
-                                        <div class="d-flex align-items-center col-4 justify-content-end pt-4">
-                                            <p class="d-flex align-items-center text-success text-end">Height: <%= sighting.plantEstHeight %>cm<i class="bi bi-arrows-vertical text-success h1" ></i></p>
+                                        <div class="d-flex align-items-center col-4 justify-content-end pt-4" id="sightingHeight">
+                                            <p class="d-flex align-items-center text-success text-end"><p id="sightingHeight1" class="text-success">Height: <%= sighting.plantEstHeight %>cm</p><i class="bi bi-arrows-vertical text-success h1" ></i></p>
                                         </div>
                                         <div class="col-8 justify-content-center pt-4 pe-4">
-                                            <img class="rounded w-100" src="<%= sighting.photo %>"><br>
+                                            <img class="rounded w-100"  id="sightingPhoto" src="<%= sighting.photo %>"><br>
                                         </div>
                                     </div>
                                 </div>
@@ -78,12 +80,52 @@
                                     <div class="col-4"></div>
                                     <div class="col-8 text-center pe-4">
                                         <i class="bi bi-arrows text-success h1 text-center"></i>
-                                        <p class="text-success">Spread: <%= sighting.plantEstSpread %>cm</p>
+                                        <p class="text-success" id="sightingSpread1">Spread: <%= sighting.plantEstSpread %>cm</p>
                                     </div>
                                 </div>
                             <div class="col-2"></div>
                         </div>
                     </div>
+                    </div>
+                </div>
+                <div class="row p-3 " id="suggestion_field">
+                    <div class="col-1"></div>
+                    <div class="col-10 bg-secondary-subtle rounded text-center pb-2">
+                    <h2>Suggestions</h2>
+                        <div class="container mt-2">
+                        <div class="row justify-content-center">
+                        <div class="col-md-6 mb-2" id="suggestion_interface">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title suggestion_name">Name: </h5>
+                                    <p class="card-text suggestion_dbpedia">DBPedia: </p>
+                                    <p class="card-text suggestion_user">Suggested By: </p>
+                                    <div class="d-flex justify-content-around button_suggest">
+                                        <button type="button" class="btn btn-success">Accept Suggestion</button>
+                                        <button type="button" class="btn btn-danger">Reject Suggestion</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                            <form class="bg-white rounded mt-2 pb-2" id="suggest_form"  method="">
+                                <h4>Make Suggestion</h4>
+                                <div>
+                                    <select class="form-select plantselect" name="DBpediaName" id="DBpediaName">
+
+                                    </select>
+                                    <div class="form-check text-center justify-content-center d-flex" id="manualDBPedia">
+                                        <input class="form-check-input" type="checkbox" value="" id="suggestionType">
+                                        <label class="form-check-label" for="suggestionType">Check for Manual Input</label>
+                                    </div>
+                                    <div>
+                                        <input class="form-control plantselect mb-1" type="text" id="DBpediaURL" name="DBpediaURL" placeholder="DBPedia URL">
+                                        <input class="form-control plantselect mb-1" type="text" id="PlantName" name="PlantName" placeholder="Plant Name">
+                                    </div>
+                                    <button type="submit" id="suggest_button" class="btn btn-primary">Submit Suggestion</button>
+                                </div>
+                            </form>
+                        </div>
+                        </div>
                     </div>
                 </div>
                 <div class="row p-3">

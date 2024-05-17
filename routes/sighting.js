@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var sighting = require('../controllers/sightings');
 var message = require('../controllers/message');
+var suggestion = require('../controllers/suggestions')
 var multer = require('multer');
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -18,7 +19,7 @@ var storage = multer.diskStorage({
 let upload = multer({storage});
 
 let stylesheets = ["/bootstrap/dist/css/bootstrap.min.css", "/stylesheets/style.css", "/bootstrap-icons/font/bootstrap-icons.css", "/bootstrap-datetime-picker/css/bootstrap-datetimepicker.css", "http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css"];
-let javascript = ["https://cdn.socket.io/4.5.4/socket.io.min.js", "/jquery/dist/jquery.js", "/bootstrap/dist/js/bootstrap.js", "/bootstrap/dist/js/bootstrap.bundle.js", "/bootstrap-datetime-picker/js/bootstrap-datetimepicker.js", "/javascripts/indexDBHandler.js","/javascripts/form_handler.js","/javascripts/name_and_sockets.js", "/javascripts/syncSightings.js", "/javascripts/sighting.js", "http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"];
+let javascript = ["https://cdn.socket.io/4.5.4/socket.io.min.js", "/jquery/dist/jquery.js", "/bootstrap/dist/js/bootstrap.js", "/bootstrap/dist/js/bootstrap.bundle.js", "/bootstrap-datetime-picker/js/bootstrap-datetimepicker.js", "/javascripts/indexDBHandler.js","/javascripts/form_handler.js","/javascripts/name_and_sockets.js", "/javascripts/syncSightings.js", "/javascripts/sighting.js","/javascripts/SPARQLHandler.js", "http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"];
 
 router.get('/', function(req, res, next) {
     let js = javascript;
@@ -115,6 +116,19 @@ router.get('/cache_links', function (req, res, next) {
         res.status(200).send([]);
     })
 })
+
+router.get('/suggestion_data/:id', function (req, res, next) {
+    let id = req.params['id'];
+    suggestion.getAllIncompleteSuggestions(id).then(
+        suggestions => {
+            console.log(suggestions);
+            res.status(200).send(suggestions);
+        }
+    ).catch((err) =>{
+        res.status(404).send([]);
+        }
+    )
+});
 
 router.get('/user_sightings/:nickname', function (req, res, next) {
     let nicknameValue = req.params['nickname'];
@@ -231,7 +245,8 @@ router.post('/upload/chat', async (req, res) =>{
 
 router.get('/sight_view/:id', function (req, res, next) {
     let js = javascript.slice();
-    js.push('/javascripts/syncSightings.js')
+    js.push('/javascripts/syncSightings.js');
+    js.push('/javascripts/onlineSightView.js');
     let css = stylesheets;
     let id = req.params['id'];
     let result = sighting.getByID(id);
