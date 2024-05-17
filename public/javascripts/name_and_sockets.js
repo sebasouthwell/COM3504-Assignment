@@ -115,7 +115,7 @@ function configureListeners() {
             (response) => {
                 response.json().then((response) => {
                     let sightingNick = response['userNickName'];
-                    if (sightingNick === name){
+                    if (sightingNick === name && userid !== name){
                         if (otherRooms.includes(room)){
                             // If it's from a different page, we notify the user
                             console.log("NOTIF triggered from socket");
