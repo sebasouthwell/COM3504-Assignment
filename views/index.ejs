@@ -4,7 +4,7 @@
         <div class="pb-2 bg-light rounded">
             <nav class="navbar navbar-expand-lg bg-body-tertiary">
                 <div class="container-fluid">
-                    <form class="collapse navbar-collapse pt-2" id="navbarSupportedContent">
+                    <form class="collapse navbar-collapse pt-2" id="navbarSupportedContent" action="">
                         <div class="dropdown ps-sm-2">
                             <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
                                 Features
@@ -21,7 +21,8 @@
                                 <li><a class="dropdown-item" href="#">
                                         <input class="form-check-input" type="checkbox" value="flowers" id="flowers" />
                                         <label class="form-check-label" for="flowers">Flowers</label>
-                                    </a></li>
+                                    </a>
+                                </li>
                             </ul>
                         </div>
                         <div class="dropdown ps-sm-2">
@@ -68,12 +69,10 @@
             </nav>
             <div class="pb-2 bg-light rounded mt-1">
                 <div class="d-flex justify-content-center  p-2 text-center">
-                    <% if (sightings.length === 0) { %>
-                    <h3 id="notFoundSightings"> No sightings found</h3>
-                    <% } else { %>
                     <div class="d-flex container row px-0 image-card " id="sightings">
                         <% for(let i = 0; i < sightings.length; i++) { %>
-                            <div class="card text-white w-24 p-0 m-1">
+                            <div class="card text-white w-24 p-0 m-1" >
+                                <input type="text" id="plantId" name="plantId" hidden="" value="<%= sightings[i]._id %>">
                                 <a href="/sight_view/<%= sightings[i]._id %>"><img class="card-img w-100 h-100" src="<%= sightings[i].photo === "" ? 'https://hips.hearstapps.com/hmg-prod/images/high-angle-view-of-variety-of-succulent-plants-royalty-free-image-1584462052.jpg' :"/images/uploads/" + sightings[i].photo %>" alt="Card image">
                                     <div class="d-flex card-img-overlay w-100 h-100 p-1 align-items-end">
                                         <div class="w-100 d-flex">
@@ -98,29 +97,55 @@
                                         <h5 class="card-title text-white">Plant Name: <%= sightings[i].plantName %></h5>
                                         <p class="card-text text-white">Date: <%= new Date(sightings[i].dateTime).toString().substring(0,24) %></p>
                                         <p class="card-text text-white">Reported by: <%= sightings[i].userNickName %></p>
+                                        <p class="hidden"><%=sightings[i].lat%>,<%= sightings[i].long %></p>
                                     </div>
                                 </a>
                             </div>
                         <% } %>
-                    <% } %>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<!-- Javascript to check all navigation values and redirect to a url with those values-->
-<!--<script>-->
-<!--    let sort = false-->
-<!--    function setSort(value){-->
-<!--       sort = value-->
-<!--    }-->
-<!--    function redirectPage() {-->
-<!--        let s =document.getElementById('seeds').checked-->
-<!--        let f = document.getElementById('fruit').checked-->
-<!--        let i = document.getElementById('identified').checked-->
-<!--        let p = document.getElementById('pending').checked-->
-<!--        let radius = document.getElementById('radius').value-->
-<!--        console.log(s,f,i,p, radius, sort)-->
-<!--    }-->
-<!--</script>-->
+</div>
+
+<div class="card text-white w-24 p-0 m-1 hidden" id="template">
+    <input type="text" id="plantId" name="plantId" hidden="" value="id_template">
+    <a href="/sight_view?id="><img class="card-img w-100 h-100" src='plantImage' alt="Card image">
+        <div class="d-flex card-img-overlay w-100 h-100 p-1 align-items-end">
+            <div class="w-100 d-flex options">
+                    <div class="rounded thumbnail-sm me-2 seed_view">
+                        <img src="/static/images/Seeds.png" alt="Has seeds" class="rounded thumbnail-sm border border-3 border-black" alt="Has Seeds">
+                    </div>
+                    <div class="rounded thumbnail-sm me-2 fruit_view">
+                        <img src="/static/images/Fruits.png" alt="Has fruits" class="rounded thumbnail-sm border border-3 border-black" alt="Has Fruits">
+                    </div>
+                    <div class="rounded thumbnail-sm me-2 flower_view">
+                        <img src="/static/images/Flower.png" alt="Has flowers" class="rounded thumbnail-sm border border-3 border-black" alt="Has Flowers">
+                    </div>
+            </div>
+        </div>
+        <div class="card-img-overlay mouseover-overlay">
+            <h5 class="card-title text-white">Plant Name: NamePlant</h5>
+            <p class="card-text text-white">Date: SightDate</p>
+            <p class="card-text text-white">Reported by: ReporterName</p>
+            <p class="hidden">LatLong</p>
+        </div>
+    </a>
+</div>
+<script>
+    //  Javascript to check all navigation values and redirect to a url with those values
+    let sort = false
+    function setSort(value){
+       sort = value
+    }
+    function redirectPage() {
+        let s =document.getElementById('seeds').checked
+        let f = document.getElementById('fruit').checked
+        let i = document.getElementById('identified').checked
+        let p = document.getElementById('pending').checked
+        let radius = document.getElementById('radius').value
+        console.log(s,f,i,p, radius, sort)
+    }
+</script>
 <%- include('partials/footer') %>

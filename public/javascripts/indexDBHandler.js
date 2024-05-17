@@ -1,17 +1,35 @@
 "use strict";
-
+let objStores = {
+    user_data: {
+        autoIncrement: true,
+        unique: true
+    },
+    sightings: {
+        autoIncrement: true,
+        unique: false
+    },
+    messages: {
+        autoIncrement: true,
+        unique: false
+    }
+};
+let user_data = "user_data";
+let sightings = "sightings";
+let messages = "messages";
 class indexDBHandler{
     constructor(dbName,objStores,debug=false){
         this.indexedDB = indexedDB;
         this.currentDB = this.indexedDB.open(dbName);
-        this.warning = document.getElementById('client_warn');
-        this.currentDB.addEventListener("error", function(error) {
-            this.warning.innerHTML = '<h1>Warning: Offline Mode is not available</h1>';
-            if (debug){
-                console.log('Error opening database' + JSON.stringify(error));
-            }
-        });
-
+        if (typeof document !== 'undefined'){
+            this.warning = document.getElementById('client_warn');
+            this.currentDB.addEventListener("error", function(error) {
+                this.warning.innerHTML = '<h1>Warning: Offline Mode is not available</h1>';
+                if (debug){
+                    console.log('Error opening database' + JSON.stringify(error));
+                }
+            });
+        }
+        this.ready = true;
         this.currentDB.addEventListener("success", function(event) {
             if (debug){
                 console.log('Database opened successfully');
@@ -20,6 +38,7 @@ class indexDBHandler{
 
         this.currentDB.addEventListener("upgradeneeded", function(ev) {
             const db = ev.target.result;
+            this.ready = false;
             for (const [key, value] of Object.entries(objStores)){
                 // Had to change the check for dict as no type of that name in JS
                  if (!db.objectStoreNames.contains(key) && value.constructor === Object){
@@ -28,6 +47,7 @@ class indexDBHandler{
                      console.log("ObjectStore format error");
                  }
             }
+            this.ready = true;
         });
     }
 
@@ -90,4 +110,18 @@ class indexDBHandler{
             }
         });
     }
+
+    getAllKeys(objStoreName, callback){
+        const idbResult = this.currentDB.result;
+        const transaction = idbResult.transaction(objStoreName, "readonly");
+        const store = transaction.objectStore(objStoreName);
+        const getRequest = store.getAllKeys();
+        getRequest.addEventListener("success", function (event) {
+            if (callback){
+                callback(getRequest.result);
+            }
+        });
+    }
+
 }
+let handler = new indexDBHandler('application', objStores, true);

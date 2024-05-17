@@ -1,7 +1,7 @@
 const sightingModel = require('../models/sighting');
 
 
-exports.create = function(sightingData, filePath){
+exports.create = function(sightingData, filePath) {
     let sighting = new sightingModel({
         plantName: sightingData.plantName,
         hasFruit: sightingData.hasFruit,
@@ -20,18 +20,26 @@ exports.create = function(sightingData, filePath){
         description: sightingData.description,
         dateTime: sightingData.dateTime,
         DBPediaURL: sightingData.DBPediaURL,
+        idempotency_token: sightingData._id
     });
 
-    return sighting.save().then(sighting => {
-        return JSON.stringify(sighting);
-    }).catch(err => {
-        console.log(err);
-        return null;
+    return this.idempotency_check(sightingData._id).then((dupe) => {
+        if (!dupe) {
+            return sighting.save().then(sighting => {
+                console.log("sighting saved");
+                return JSON.stringify(sighting);
+            }).catch(err => {
+                console.log(err);
+                return null;
+            });
+        } else {
+            return null;
+        }
     });
 };
 
 exports.getAll = function(){
-    return sightingModel.find({}).then(sightings => {
+    return sightingModel.find({}).sort('dateTime').then(sightings => {
         let newSightings = [];
         for (let i = 0; i < sightings.length; i++){
             newSightings.push(parseSighting(sightings[i]));
@@ -63,12 +71,16 @@ const parseSighting = function(sighting){
         description: sighting['description'],
         dateTime: sighting['dateTime'],
         DBPediaURL: sighting['DBPediaURL']
+
     }
     return s;
 }
 
 exports.getAllFilter = function(query_map){
-    return sightingModel.find(query_map).then(sightings => {
+    return sightingModel.find(query_map).sort('dateTime').then(sightings => {
+        if (sightings == null){
+            return null;
+        }
         let newSightings = [];
         for (let i = 0; i < sightings.length; i++){
             newSightings.push(parseSighting(sightings[i]));
@@ -80,11 +92,65 @@ exports.getAllFilter = function(query_map){
     });
 }
 
+exports.idempotency_check= function(token){
+    return sightingModel.findOne({idempotency_token: token}).then(sightings => {
+        console.log(typeof(sightings));
+        if (sightings === undefined || sightings === null){
+            console.log("No duplicate")
+            return false;
+        }
+        else{
+            return sightings._id;
+        }
+    }).catch(err => {
+        console.log(err);
+        return false;
+    });
+}
+
+
+exports.getAllCache = function(){
+    return sightingModel.find(null).then(
+        sightings => {
+            if (sightings == null){
+                return null;
+            }
+            let cachePath = [];
+            for (let i = 0; i < sightings.length; i++){
+                cachePath.push('/sight_view/'+sightings[i]._id);
+                if (/\w+/.test(sightings[i].photo)){
+                    cachePath.push('/images/uploads/'+sightings[i].photo);
+                }
+            }
+            return cachePath;
+        }).catch(err => {
+            console.log(err);
+            return null;
+        });
+};
+
+exports.getIDsByNickname = function(nickname){
+    return sightingModel.find({userNickName: nickname}).then(sightings => {
+        if (sightings == null){
+            return null;
+        }
+        let sightingsJSON = JSON.stringify(sightings);
+        let name_ids = [];
+        for (let i = 0; i < sightings.length; i++){
+            name_ids.push(sightings[i]._id);
+        }
+        return name_ids;
+    }).catch(err => {
+        return [];
+    });
+}
+
+
+
 exports.getByID = function(id){
     return sightingModel.findById(id).then(sighting => {
         // Create a new object with the lat and long as numbers
         let s = parseSighting(sighting);
-        console.log(s);
         return JSON.stringify(s);
     }).catch(err => {
         console.log(err);

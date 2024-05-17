@@ -16,6 +16,8 @@
     <% for (var i=0; i < javascripts.length; i++) { %>
     <script type="text/javascript" src="<%= javascripts[i] %>"></script>
     <% } %>
+    <script type="module" src="/javascripts/mainModule.js"></script>
+    <link rel="manifest" href="/manifest.json">
 </head>
 <header class="align-items-center rounded mb-2">
     <div class="bg-warning text-dark text-center p-2 hidden" id="client_warn">
@@ -29,7 +31,9 @@
             <h1 class="text-center text-primary">Planttrest</h1>
         </div>
         <div class="d-flex align-items-center col justify-content-end text-primary">
-            <a href="/login">Nickname: <span id="nickname"></span> </a>
+            <button class="btn btn-outline-info mx-2">
+                <a href="/login" class="text-primary mx-2 text-decoration-none">Nickname: <span id="nickname"></span> </a>
+            </button>
             <a href="/" class="link-success" data-toggle="tooltip" data-placement="bottom" title="Add sighting"><i class="bi bi-search pe-2"  style="font-size: 60px;"></i></a>
             <a href="/sight" class="link-success" data-toggle="tooltip" data-placement="bottom" title="Add sighting"><i class="bi bi-clipboard-data pe-2" style="font-size: 60px;"></i></a>
         </div>
