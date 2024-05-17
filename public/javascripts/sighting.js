@@ -26,10 +26,11 @@ function setupNotifications() {
         });
     }
 }
+//Function to make notifications
 function makeNotification(title,body) {
     body['timestamp'] = new Date();
     body['lang'] = 'en';
-
+    //Check notification permissions
     if (Notification.permission === "granted"){
         console.log('Notification permitted');
         navigator.serviceWorker.ready

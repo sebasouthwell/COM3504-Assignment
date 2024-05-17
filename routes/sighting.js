@@ -130,6 +130,7 @@ router.get('/suggestion_data/:id', function (req, res, next) {
     )
 });
 
+// returns all sightings associated with provided nickname
 router.get('/user_sightings/:nickname', function (req, res, next) {
     let nicknameValue = req.params['nickname'];
     sighting.getIDsByNickname(nicknameValue).then(sightingIDs => {
@@ -141,6 +142,7 @@ router.get('/user_sightings/:nickname', function (req, res, next) {
     });
 })
 
+// returns all messages associated with sighting represented by the provided id
 router.get('/sight_messages/:sighting_id', function (req, res) {
     let sightingID = req.params['sighting_id'];
     message.getAllBySighting(sightingID).then(messages => {
@@ -175,6 +177,7 @@ router.get('/accept/:id', function (req, res) {
     })
 })
 
+// Receives data from sighting form to create a sighting
 router.post('/upload/sighting', upload.single('photo'), function (req, res){
     let sightingData = req.body;
     console.log()
@@ -219,6 +222,7 @@ router.post('/upload/sighting', upload.single('photo'), function (req, res){
     })
 });
 
+// Receives data from comment form when posted on viewPlant
 router.post('/upload/chat', async (req, res) =>{
     let chatData = req.body;
     message.idempotency_check(chatData.idempotency_token).then(async (taken) => {
@@ -266,6 +270,7 @@ router.post('/upload/chat', async (req, res) =>{
     })
 })
 
+// Links to viewPlant page with id and data of sighting to display
 router.get('/sight_view/:id', function (req, res, next) {
     let js = javascript.slice();
     js.push('/javascripts/syncSightings.js');
@@ -295,6 +300,7 @@ router.get('/sight_view/:id', function (req, res, next) {
     });
 });
 
+// Returns sighting data related to provided id
 router.get('/sighting_data/:id', function (req, res) {
     let id = req.params['id'];
     sighting.getByID(id).then(sightingByID => {
@@ -305,6 +311,7 @@ router.get('/sighting_data/:id', function (req, res) {
         res.status(500).send(err);
     });
 });
+
 // For pages that have not been uploaded to the mongoDB yet
 router.get('/sight_view', (req, res) => {
     let js = javascript.slice();
@@ -334,6 +341,8 @@ router.get('/sight_view', (req, res) => {
         sighting: template
     })
 });
+
+// Link to the login page to change nickname
 router.get('/login', function (req, res, next) {
     js = javascript.slice();
     js.push("/javascripts/login.js");

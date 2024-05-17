@@ -6,6 +6,7 @@ let mySighting = false;
 let socket = io();
 let suggestionTemplate = null;
 const generateQuickGuid = size => [...Array(size)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
+//Function to generate random name if nickname is not chosen and action that requires nickname is performed
 async function genRandomName(wordCount,maxNum){
     var word_list = "https://raw.githubusercontent.com/felixfischer/categorized-words/master/2of12id.json";
     try{
@@ -41,7 +42,7 @@ async function userSightings(user){
     }
 }
 
-
+//Loads names and sockets
 function loadNameAndSockets() {
     isOnline();
     console.log('Loaded')
@@ -88,10 +89,12 @@ function loadNameAndSockets() {
             });
 }
 
+//updates username
 function changeName(new_name){
     name =new_name;
     handler.update(user_data, 'name',new_name,() => {
-        $('#nickname')[0].innerHTML = new_name;});
+        $('#nickname')[0].innerHTML = new_name;
+        $('#nickname_phone')[0].innerHTML = new_name;});
 }
 
 window.addEventListener('load', () =>{
@@ -151,6 +154,7 @@ function configureListeners() {
     });
 }
 
+//Function that loads previous chat data
 function getPreviousChat(){
     fetch('/sight_messages/' + current_sighting ).then(
         (response) => {

@@ -1,4 +1,5 @@
 let localSighting = null;
+//Loads plants locally and prefils the innerhtml
 window.addEventListener('load', () => {
     const urlParams = new URLSearchParams(window.location.search);
     const id = urlParams.get('id');

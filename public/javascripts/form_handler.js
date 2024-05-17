@@ -116,6 +116,7 @@ function requestSync(){
         console.log('Sync registration failed:', error);
     });
 }
+///Uploads any information that has been added while the site was offline when it comes back online
 async function offlineToOnline(){
     try{
         let online = await onlineStatusAsync();
@@ -133,6 +134,7 @@ function isOnline() {
     if (!navigator.onLine){
         onlineStatus = false;
     }
+    //If sites not online get cashed web pages
     else{
         fetch(location.origin +'/cache_links').then((response) =>{
             console.log(response);

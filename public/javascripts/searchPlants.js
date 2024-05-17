@@ -1,8 +1,9 @@
-
+//Function that sets the sort value that has been selected each time the dropdown has an item selected
 function setSort(value){
     document.getElementById("sort").value = value;
     document.getElementById("dropdownSearch").innerHTML = "" + document.getElementById(value).innerHTML + "";
 }
+//Adds values to url when form is submitted so on reload the index page is filtered/ sorted
 function redirectPage() {
     const queryString = new URLSearchParams(window.location.search);
     let hasFruit = document.getElementById('fruit').checked;
@@ -49,15 +50,14 @@ function redirectPage() {
     }
 
     if(document.getElementById("sort").value) {
-        console.log(0)
         queryString.set('sort', document.getElementById("sort").value);
     }
 
     window.location.href = "?" + queryString.toString();
 }
+//Function to prefill form values with those from the previous query on page load
 function prefillValues(){
     const urlParams = new URLSearchParams(window.location.search);
-    //console.log(urlParams.size)
     if (urlParams.has('sort')) {
         document.getElementById("sort").value = urlParams.get('sort');
         document.getElementById("dropdownSearch").innerHTML = document.getElementById( urlParams.get('sort')).innerHTML;
@@ -86,6 +86,7 @@ function prefillValues(){
 
 }
 
+//Loads the relevant sightings
 window.addEventListener('load', () => {
     var sightings = document.getElementById('sightings');
     var template = document.querySelector('#template');

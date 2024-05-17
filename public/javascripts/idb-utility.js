@@ -12,26 +12,6 @@ const addNewSightingToSync = (syncSightingIDB) => {
         console.log("Sync registration failed: " + JSON.stringify(err))
     })
 
-    // if (txt_val !== "") {
-    //     const transaction = syncSightingIDB.transaction(["sync-sightings"], "readwrite")
-    //     const sightingStore = transaction.objectStore("sync-sightings")
-    //     const addRequest = sightingStore.add({text: txt_val})
-    //     addRequest.addEventListener("success", () => {
-    //         console.log("Added " + "#" + addRequest.result + ": " + txt_val)
-    //         const getRequest = sightingStore.get(addRequest.result)
-    //         getRequest.addEventListener("success", () => {
-    //             console.log("Found " + JSON.stringify(getRequest.result))
-    //             // Send a sync message to the service worker
-    //             navigator.serviceWorker.ready.then((sw) => {
-    //                 sw.sync.register("sync-sighting")
-    //             }).then(() => {
-    //                 console.log("Sync registered");
-    //             }).catch((err) => {
-    //                 console.log("Sync registration failed: " + JSON.stringify(err))
-    //             })
-    //         })
-    //     })
-    // }
 }
 
 // Function to add new sightings to IndexedDB and return a promise

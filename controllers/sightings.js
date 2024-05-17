@@ -77,6 +77,7 @@ const parseSighting = function(sighting){
     return s;
 }
 
+//Gets all sightings that fulfill the filter requirements
 exports.getAllFilter = function(query_map){
     return sightingModel.find(query_map).sort('dateTime').then(sightings => {
         if (sightings == null){
