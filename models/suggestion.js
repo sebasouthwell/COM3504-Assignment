@@ -14,7 +14,7 @@ var SuggestionsSchema = new Schema(
 
 SuggestionsSchema.set('toObject', {getters: true, virtuals: true});
 
-//On some combionations of Node and Mongoose only the following command works - in theory they should be equivalent
+//On some combinations of Node and Mongoose only the following command works - in theory they should be equivalent
 //CharacterSchema.set('toObject', {getters: true, virtuals: true});
 
 // the schema is useless so far

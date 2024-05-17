@@ -152,6 +152,29 @@ router.get('/sight_messages/:sighting_id', function (req, res) {
     });
 });
 
+router.get('/accept/:id', function (req, res) {
+    let js = javascript.slice();
+    js.push('/javascripts/syncSightings.js');
+    js.push('/javascripts/onlineSightView.js');
+    let id = req.params['id'];
+    let name = req.params['user'];
+    let backURL=req.header('Referer')
+    suggestion.accept(id,name).then((res2)=>{
+        suggestion.getByID(id).then((res3)=>{
+            res3 = JSON.parse(res3);
+            sighting.updateSuggestion(id,res3).then(suggestion => {
+                res.redirect(backURL);
+            }).catch((err)=>{
+                res.redirect(backURL);
+            })
+        }).catch((err) => {
+            res.redirect(backURL);
+        })
+    }).catch((err) => {
+        res.redirect(backURL);
+    })
+})
+
 router.post('/upload/sighting', upload.single('photo'), function (req, res){
     let sightingData = req.body;
     console.log()

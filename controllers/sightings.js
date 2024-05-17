@@ -128,6 +128,17 @@ exports.getAllFilter = function(query_map){
     });
 }
 
+exports.updateSuggestion = function (id, suggestion){
+    return sightingModel.updateOne({_id: id},{plantName: suggestion.suggestedName, DBPediaURL: suggestion.DBPediaURL}).then(function(result){
+       if (result){
+           return true;
+       }
+       else{
+           return false;
+       }
+    });
+}
+
 exports.idempotency_check= function(token){
     return sightingModel.findOne({idempotency_token: token}).then(sightings => {
         console.log(typeof(sightings));

@@ -126,7 +126,7 @@ window.addEventListener('load', () => {
                 }
                 sightings.appendChild(copy);
             }
-        }else if (sightings.children.length === 0){
+        }else if (sightings.length === 0){
             let h3 = document.createElement("h3");
             h3.innerHTML = 'No sightings found';
             h3.id = 'notFoundSightings';

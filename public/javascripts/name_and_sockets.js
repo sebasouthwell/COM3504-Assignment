@@ -187,28 +187,11 @@ function getPreviousSuggestions(){
                 suggestion.getElementsByClassName('suggestion_dbpedia')[0].innerHTML = 'DBpedia: '+  sugg['DBPediaURL']
                 suggestion.getElementsByClassName('suggestion_user')[0].innerHTML ='Suggested by: '+ sugg['suggestorNickname']
                 suggestion.hidden = false;
-                if (!mySighting){
-                    $('.button_suggest')[0].remove();
-                }else{
-                    suggestion.getElementsByClassName('btn-success')[0].addEventListener('click', () => {
-                        fetch('/accept/'+sugg['_id']).then(
-                            (response) => {
-                                if (response.status === 200){
-                                    window.location.reload();
-                                }
-                            }
-                        );
-                    })
-                    suggestion.getElementsByClassName('btn-danger')[0].addEventListener('click', () => {
-                        fetch('/reject/'+sugg['_id']).then(
-                            (response) => {
-                                if (response.status === 200){
-                                    suggestion.hidden = true;
-                                }
-                            }
-                        );
-                    })
-                }
+                let successBTN = suggestion.getElementsByClassName('accept_link')[0];
+                let rejectedBTN = suggestion.getElementsByClassName('reject_link')[0];
+                console.log(successBTN, rejectedBTN);
+                successBTN.href = '/accept/' + sugg['_id'] + "?user=" + name;
+                rejectedBTN.href ='/reject/' + sugg['_id']+ "?user=" + name;
                 suggestion_interface.appendChild(suggestion);
 
             }
