@@ -8,6 +8,32 @@ window.addEventListener('load', function () {
     $('#dateTime').val(date.substring(0,date.length-3));
     $('#dateTime').datetimepicker();
     $('#dateTime').datetimepicker('setStartDate', '2012-01-01');
+    let plant_select = $('.plantselect')[0];
+    let plant_type = $('.plantselect')[1];
+
+    if (navigator.onLine){
+        let plant_list = listPlants().then((plants) =>{
+            if (plants.length > 0){
+                plant_type.remove()
+                for (let plant of plants){
+                    let option = document.createElement('option');
+                    option.text = plant.label.value;
+                    option.value = plant.uri.value;
+                    plant_select.add(option);
+                }
+                document.getElementById('DBpediaName').addEventListener('change', function() {
+                    let val = $('.plantselect option:selected')[0].text;
+                    if (this.value.length === 0){
+                        val = '';
+                    }
+                    $('#givenName').val(val);
+                });
+            }
+        })
+    }
+    else{
+        plant_select.remove();
+    }
     colorInput = document.getElementById('flowerColour');
     colorPreview = document.getElementById('colorPreview');
     colorInput.addEventListener('input', function() {
@@ -40,7 +66,7 @@ function submitForm(event) {
     let guid = generateQuickGuid(24)
     setTimeout(function(){
         let sighting = {
-            _id: guid, userNickName: name,givenName: $("#givenName").val(),description:$('#description').val(),lat: $('#lat').val(),long: $('#long').val(), plantEstHeight: $('#plantEstHeight').val(), plantEstSpread: $('#plantEstSpread').val(), hasFlowers: $('#hasFlowers').is(':checked'), flowerColour: $('#flowerColour').val(), hasFruit: $('#hasFruit').is(':checked'), hasSeeds: $('#hasSeeds').is(':checked'), sunExposureLevel: $('#sunExposureLevel').val(), dateTime: $('#dateTime').val(), identificationStatus: $('#identificationStatus').val(), photo: imageString, chat: []
+            _id: guid, userNickName: name,givenName: $("#givenName").val(),description:$('#description').val(),lat: $('#lat').val(),long: $('#long').val(), plantEstHeight: $('#plantEstHeight').val(), plantEstSpread: $('#plantEstSpread').val(), hasFlowers: $('#hasFlowers').is(':checked'), flowerColour: $('#flowerColour').val(), hasFruit: $('#hasFruit').is(':checked'), hasSeeds: $('#hasSeeds').is(':checked'), sunExposureLevel: $('#sunExposureLevel').val(), dateTime: $('#dateTime').val(), identificationStatus: $('#identificationStatus').val(), DBPediaURL: $('#DBpediaName').val(), photo: imageString, chat: []
         }
         if (onlineStatus){
             console.log(sighting)

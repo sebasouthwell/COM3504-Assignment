@@ -2,7 +2,9 @@ let name = null;
 let current_sighting = null;
 let otherRooms = [];
 let onlinePage = false;
+let mySighting = false;
 let socket = io();
+let suggestionTemplate = null;
 const generateQuickGuid = size => [...Array(size)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
 async function genRandomName(wordCount,maxNum){
     var word_list = "https://raw.githubusercontent.com/felixfischer/categorized-words/master/2of12id.json";
@@ -26,6 +28,19 @@ async function genRandomName(wordCount,maxNum){
         return null;
     }
 }
+
+async function userSightings(user){
+    try{
+        let res = await fetch('/user_sightings/' + user).then((res) => res.json()).catch((e) => {
+            return [];
+        })
+        return res;
+    }
+    catch (e){
+        return [];
+    }
+}
+
 
 function loadNameAndSockets() {
     isOnline();
@@ -52,12 +67,10 @@ function loadNameAndSockets() {
         if (location.pathname.includes('sight_view')){
             connectToPageRoom();
         }
-        fetch('/user_sightings/' + name).then(
-            (response) => {
-                let json = response.json().then(
-                    (js_response) => {
+        userSightings(name).then((js_response) => {
                         if (js_response.includes(current_sighting)){
                             js_response.pop(current_sighting);
+                            mySighting = true;
                         }
                         otherRooms = js_response;
                         for (let i = 0; i < otherRooms.length; i++) {
@@ -70,13 +83,7 @@ function loadNameAndSockets() {
                     console.log('Failed to get other rooms')
                     configureListeners();
                 })
-            }
-        ).catch(() => {
-            configureListeners();
-                console.log('Could not get pages from user for notifications')
-            }
-        );
-    });
+            });
 }
 
 function changeName(new_name){
@@ -99,8 +106,10 @@ function connectToPageRoom() {
         let url = new URL(location.href);
         current_sighting = url.searchParams.get("id");
     }
+    suggestionTemplate = $('#suggestion_interface div')[0];
     connectToRoom(current_sighting);
     getPreviousChat();
+    getPreviousSuggestions();
 }
 
 function connectToRoom(roomNo) {
@@ -132,8 +141,8 @@ function configureListeners() {
             }
         );
     })
-    socket.on('suggestion', function (room,userid,suggest){
-        if (userid !== name){
+    socket.on('suggestion', function (room, userId, sighting_url, sighting_name, id){
+        if (userId !== name){
             if (room === current_sighting) {
                 // If it's from this page, we display directly on the page
             }
@@ -172,6 +181,45 @@ function getPreviousChat(){
     });
 }
 
+function getPreviousSuggestions(){
+    fetch('/suggestion_data/' + current_sighting).then((response) => {
+        response.json().then((response) => {
+            for (let i = 0; i < response.length; i++){
+                let sugg = response[i]
+                let suggestion = suggestionTemplate.cloneNode(true);
+                suggestion.getElementsByClassName('suggestion_name')[0].innerHTML = "Name: " + sugg['suggestedName']
+                suggestion.getElementsByClassName('suggestion_dbpedia')[0].innerHTML = 'DBpedia: '+  sugg['DBPediaURL']
+                suggestion.getElementsByClassName('suggestion_user')[0].innerHTML ='Suggested by: '+ sugg['suggestorNickname']
+                suggestion.hidden = false;
+                if (!mySighting){
+                    $('.button_suggest')[0].remove();
+                }else{
+                    suggestion.getElementsByClassName('btn-success')[0].addEventListener('click', () => {
+                        fetch('/accept/'+sugg['_id']).then(
+                            (response) => {
+                                if (response.status === 200){
+                                    window.location.reload();
+                                }
+                            }
+                        );
+                    })
+                    suggestion.getElementsByClassName('btn-danger')[0].addEventListener('click', () => {
+                        fetch('/reject/'+sugg['_id']).then(
+                            (response) => {
+                                if (response.status === 200){
+                                    suggestion.hidden = true;
+                                }
+                            }
+                        );
+                    })
+                }
+                suggestion_interface.appendChild(suggestion);
+
+            }
+        })
+        suggestionTemplate.hidden = true;
+    })
+}
 
 /**
  * called when the Send button is pressed. It gets the text to send from the interface
@@ -205,6 +253,29 @@ function sendChatText() {
         });
     }
     writeOnHistory(name, chatText, new Date());
+}
+
+function sendSuggestion(event){
+    event.preventDefault();
+    let manualInput = $('#manualDBPedia')[0];
+    let dbPediaURL = $('#DBpediaURL')[0];
+    let plant_name = $('#PlantName')[0];
+
+    let sighting_name = $('#DBpediaName option:selected')[0].text;
+    let sighting_url = $('#DBpediaName option:selected')[0].value;
+    if (manualInput.children[0].checked){
+       sighting_name = plant_name.value;
+       sighting_url = dbPediaURL.value;
+    }
+    DBpediaQuery(sighting_url).then((res) => {
+        if (res.length > 0){
+            socket.emit('suggestion', current_sighting, name, sighting_url,sighting_name);
+        }
+        else{
+            alert('Please select a valid DBpedia URL');
+
+        }
+    })
 }
 
 /**

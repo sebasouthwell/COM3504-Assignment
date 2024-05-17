@@ -17,6 +17,7 @@ const DEFAULT_CACHING_FILES  = [
     '/javascripts/name_and_sockets.js',
     '/javascripts/locationManager.js',
     '/javascripts/localSightView.js',
+    '/javascripts/onlineSightView.js',
     '/javascripts/indexDBHandler.js',
     '/javascripts/createSighting.js',
     '/javascripts/syncSightings.js',
@@ -25,6 +26,7 @@ const DEFAULT_CACHING_FILES  = [
     '/javascripts/searchPlants.js',
     '/javascripts/sighting.js',
     "/javascripts/login.js",
+    "/javascripts/SPARQLHandler.js",
     '/sight',
     '/sight_view',
     '/login',
@@ -40,7 +42,7 @@ const DEFAULT_CACHING_FILES  = [
     'https://cdn.socket.io/4.5.4/socket.io.min.js'
 ];
 
-let notRefreshable = ['js','css', 'bootstrap','manifest','static'];
+let notRefreshable = ['js','css', 'bootstrap','manifest','static','upload'];
 
 let swDebug= false;
 function debugLog(message) {
@@ -57,12 +59,12 @@ self.addEventListener('install', (event) => {
             fetch("http://localhost:3000/cache_links", {
                 method: 'get'
             }).then(r => {
-                r.json().then(rjson => {
-                    cache_obj.addAll(rjson);
-                    cache_obj.addAll(DEFAULT_CACHING_FILES);
-                }).catch(() =>{
-                    cache_obj.addAll(DEFAULT_CACHING_FILES);
-                })
+                    r.json().then(rjson => {
+                        cache_obj.addAll(rjson);
+                        cache_obj.addAll(DEFAULT_CACHING_FILES);
+                    }).catch(() =>{
+                        cache_obj.addAll(DEFAULT_CACHING_FILES);
+                    })
                 }
             ).catch(() => {
                 cache_obj.addAll(DEFAULT_CACHING_FILES);
@@ -96,8 +98,9 @@ self.addEventListener('fetch', (event) => {
     if (request.url.includes('sight_view?id')) {
         const parsedURL = new URL(request.url);
         url = parsedURL.origin + '/sight_view';
+        console.log('Redirect');
     }
-    if (request.method !== 'GET' || request.url.includes('cache_links') || request.url.includes('user_sightings') || request.url.includes('sight_messages') || request.url.includes('upload')){
+    if (request.method !== 'GET' || request.url.includes('cache_links') || request.url.includes('user_sightings') || request.url.includes('sight_messages')){
         if (!request.url.includes('socket.io')){
             console.log(request);
         }
@@ -166,76 +169,3 @@ self.addEventListener('sync', event => {
         );
     }
 });
-/*
-self.addEventListener('sync', event => {
-    console.log('Service Worker: Syncing Started');
-    if (event.tag === 'sync-sighting') {
-        console.log('Service Worker: Syncing new Sightings');
-        openSyncSightingsIDB().then((syncPostDB) => {
-            getAllSyncSightings(syncPostDB).then((syncSightings) => {
-                for (const syncSighting of syncSightings) {
-                    console.log('Service Worker: Syncing new Sighting: ', syncSighting);
-                    console.log(syncSighting.text)
-                    // Create a FormData object
-                    const formData = new URLSearchParams();
-
-                    // Iterate over the properties of the JSON object and append them to FormData
-                    formData.append("text", syncSighting.text);
-
-                    // Fetch with FormData instead of JSON
-                    fetch('http://localhost:3000/c', {
-                        method: 'POST',
-                        body: formData,
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                        },
-                    }).then(() => {
-                        console.log('Service Worker: Syncing new Sighting: ', syncSighting, ' done');
-                        deleteSyncSightingFromIDB(syncPostDB,syncSighting.id);
-                        // Send a notification
-                        self.registration.showNotification('Sighting Synced', {
-                            body: 'Sighting synced successfully!',
-                        });
-                    }).catch((err) => {
-                        console.error('Service Worker: Syncing new Sighting: ', syncSighting, ' failed');
-                    });
-                }
-            });
-        });
-    }
-    if (event.tag === 'sync-message') {
-        console.log('Service Worker: Syncing new Message');
-        openSyncSightingsIDB().then((syncPostDB) => {
-            getAllSyncSightings(syncPostDB).then((syncSightings) => {
-                for (const syncSighting of syncSightings) {
-                    console.log('Service Worker: Syncing new Sighting: ', syncSighting);
-                    console.log(syncSighting.text)
-                    // Create a FormData object
-                    const formData = new URLSearchParams();
-
-                    // Iterate over the properties of the JSON object and append them to FormData
-                    formData.append("text", syncSighting.text);
-
-                    // Fetch with FormData instead of JSON
-                    fetch('http://localhost:3000/c', {
-                        method: 'POST',
-                        body: formData,
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                        },
-                    }).then(() => {
-                        console.log('Service Worker: Syncing new Sighting: ', syncSighting, ' done');
-                        deleteSyncSightingFromIDB(syncPostDB,syncSighting.id);
-                        // Send a notification
-                        self.registration.showNotification('Sighting Synced', {
-                            body: 'Sighting synced successfully!',
-                        });
-                    }).catch((err) => {
-                        console.error('Service Worker: Syncing new Sighting: ', syncSighting, ' failed');
-                    });
-                }
-            });
-        });
-    }
-});
-*/

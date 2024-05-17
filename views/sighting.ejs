@@ -8,7 +8,10 @@
             <form method="" enctype='multipart/form-data' id="sightingForm" name="sightingForm">
                 <div class="form-group pt-1">
                     <label for="DBpediaName">DBpedia resource (if known): </label>
-                    <input class="form-control" type="text" id="DBpediaName" name="DBpediaName" placeholder="Search for a plant...">
+                    <select class="form-select plantselect" name="DBpediaName" id="DBpediaName">
+                        <option value="">Unknown</option>
+                    </select>
+                    <input class="form-control plantselect" type="text" id="DBpediaName" name="DBpediaName" placeholder="DBPedia URL">
                     <div id="DBpediaDropdownList" class="autocomplete-items"></div>
                     <a id="DBpediaURL"></a>
                 </div>

@@ -16,6 +16,8 @@
     <% for (var i=0; i < javascripts.length; i++) { %>
     <script type="text/javascript" src="<%= javascripts[i] %>"></script>
     <% } %>
+    <script type="module" src="/javascripts/mainModule.js"></script>
+    <link rel="manifest" href="/manifest.json">
 </head>
 <header class="align-items-center rounded mb-2">
     <div class="bg-warning text-dark text-center p-2 hidden" id="client_warn">
